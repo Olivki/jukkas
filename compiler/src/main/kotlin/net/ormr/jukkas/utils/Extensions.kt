@@ -1,6 +1,6 @@
 package net.ormr.jukkas.utils
 
-import net.ormr.jukkas.ast.Node
+import net.ormr.jukkas.ir.Node
 
 private val unicodePattern = "\\\\u([0-9A-Fa-f]{4})".toRegex()
 

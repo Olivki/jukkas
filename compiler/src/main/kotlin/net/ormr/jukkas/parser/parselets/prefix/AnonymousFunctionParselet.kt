@@ -16,9 +16,9 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ast.Block
-import net.ormr.jukkas.ast.LambdaDeclaration
-import net.ormr.jukkas.ast.withPosition
+import net.ormr.jukkas.ir.Block
+import net.ormr.jukkas.ir.LambdaDeclaration
+import net.ormr.jukkas.ir.withPosition
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType.*

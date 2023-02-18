@@ -16,10 +16,10 @@
 
 package net.ormr.jukkas.parser.parselets.infix
 
-import net.ormr.jukkas.ast.BinaryOperation
-import net.ormr.jukkas.ast.BinaryOperator
-import net.ormr.jukkas.ast.Expression
-import net.ormr.jukkas.ast.withPosition
+import net.ormr.jukkas.ir.BinaryOperation
+import net.ormr.jukkas.ir.BinaryOperator
+import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.ir.withPosition
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser

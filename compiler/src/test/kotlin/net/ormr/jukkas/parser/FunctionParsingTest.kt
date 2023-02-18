@@ -18,8 +18,8 @@ package net.ormr.jukkas.parser
 
 import io.kotest.core.spec.style.FunSpec
 import net.ormr.jukkas.arg
-import net.ormr.jukkas.ast.FunctionDeclaration
-import net.ormr.jukkas.ast.Table
+import net.ormr.jukkas.ir.FunctionDeclaration
+import net.ormr.jukkas.ir.Table
 import net.ormr.jukkas.parseStatement
 import net.ormr.jukkas.shouldBeStructurallyEquivalentTo
 import net.ormr.jukkas.shouldBeSuccess

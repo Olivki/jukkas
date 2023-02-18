@@ -16,8 +16,8 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ast.IntLiteral
-import net.ormr.jukkas.ast.withPosition
+import net.ormr.jukkas.ir.IntLiteral
+import net.ormr.jukkas.ir.withPosition
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
 

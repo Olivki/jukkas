@@ -40,7 +40,7 @@ import net.ormr.jukkas.Point
 import net.ormr.jukkas.Position
 import net.ormr.jukkas.Source
 import net.ormr.jukkas.Span
-import net.ormr.jukkas.ast.*
+import net.ormr.jukkas.ir.*
 import net.ormr.jukkas.cli.CliErrorReporter
 import net.ormr.jukkas.flatMap
 import net.ormr.jukkas.getOrElse

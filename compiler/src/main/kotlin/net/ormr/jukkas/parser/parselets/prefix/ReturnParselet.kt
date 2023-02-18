@@ -16,8 +16,8 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ast.Return
-import net.ormr.jukkas.ast.withPosition
+import net.ormr.jukkas.ir.Return
+import net.ormr.jukkas.ir.withPosition
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser

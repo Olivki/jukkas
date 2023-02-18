@@ -16,16 +16,16 @@
 
 package net.ormr.jukkas
 
-import net.ormr.jukkas.ast.BasicArgument
-import net.ormr.jukkas.ast.BinaryOperation
-import net.ormr.jukkas.ast.BinaryOperator
-import net.ormr.jukkas.ast.BooleanLiteral
-import net.ormr.jukkas.ast.DefaultArgument
-import net.ormr.jukkas.ast.DefinitionReference
-import net.ormr.jukkas.ast.Expression
-import net.ormr.jukkas.ast.IntLiteral
-import net.ormr.jukkas.ast.InvocationArgument
-import net.ormr.jukkas.ast.StringLiteral
+import net.ormr.jukkas.ir.BasicArgument
+import net.ormr.jukkas.ir.BinaryOperation
+import net.ormr.jukkas.ir.BinaryOperator
+import net.ormr.jukkas.ir.BooleanLiteral
+import net.ormr.jukkas.ir.DefaultArgument
+import net.ormr.jukkas.ir.DefinitionReference
+import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.ir.IntLiteral
+import net.ormr.jukkas.ir.InvocationArgument
+import net.ormr.jukkas.ir.StringLiteral
 import net.ormr.jukkas.type.Type
 import net.ormr.jukkas.type.TypeName
 

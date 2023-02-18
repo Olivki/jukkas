@@ -16,11 +16,11 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ast.Expression
-import net.ormr.jukkas.ast.StringLiteral
-import net.ormr.jukkas.ast.StringTemplateExpression
-import net.ormr.jukkas.ast.StringTemplatePart
-import net.ormr.jukkas.ast.withPosition
+import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.ir.StringLiteral
+import net.ormr.jukkas.ir.StringTemplateExpression
+import net.ormr.jukkas.ir.StringTemplatePart
+import net.ormr.jukkas.ir.withPosition
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType

@@ -19,7 +19,7 @@ package net.ormr.jukkas
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.should
-import net.ormr.jukkas.ast.Node
+import net.ormr.jukkas.ir.Node
 import net.ormr.jukkas.reporter.Message
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract

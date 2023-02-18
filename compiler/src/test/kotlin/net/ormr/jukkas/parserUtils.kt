@@ -16,9 +16,9 @@
 
 package net.ormr.jukkas
 
-import net.ormr.jukkas.ast.Expression
-import net.ormr.jukkas.ast.Node
-import net.ormr.jukkas.ast.Statement
+import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.ir.Node
+import net.ormr.jukkas.ir.Statement
 import net.ormr.jukkas.parser.JukkasParser
 
 inline fun <T : Node> parseNode(

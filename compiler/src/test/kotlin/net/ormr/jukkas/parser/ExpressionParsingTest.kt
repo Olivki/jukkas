@@ -17,14 +17,14 @@
 package net.ormr.jukkas.parser
 
 import io.kotest.core.spec.style.FunSpec
-import net.ormr.jukkas.ast.BinaryOperator.DIVISION
-import net.ormr.jukkas.ast.BinaryOperator.MINUS
-import net.ormr.jukkas.ast.BinaryOperator.MULTIPLICATION
-import net.ormr.jukkas.ast.BinaryOperator.PLUS
-import net.ormr.jukkas.ast.FunctionInvocation
-import net.ormr.jukkas.ast.MemberAccessOperation
-import net.ormr.jukkas.ast.StringTemplateExpression
-import net.ormr.jukkas.ast.StringTemplatePart
+import net.ormr.jukkas.ir.BinaryOperator.DIVISION
+import net.ormr.jukkas.ir.BinaryOperator.MINUS
+import net.ormr.jukkas.ir.BinaryOperator.MULTIPLICATION
+import net.ormr.jukkas.ir.BinaryOperator.PLUS
+import net.ormr.jukkas.ir.FunctionInvocation
+import net.ormr.jukkas.ir.MemberAccessOperation
+import net.ormr.jukkas.ir.StringTemplateExpression
+import net.ormr.jukkas.ir.StringTemplatePart
 import net.ormr.jukkas.binary
 import net.ormr.jukkas.boolean
 import net.ormr.jukkas.int

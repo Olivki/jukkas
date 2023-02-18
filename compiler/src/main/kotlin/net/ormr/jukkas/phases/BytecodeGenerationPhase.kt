@@ -25,7 +25,7 @@ import net.ormr.asmkt.defineMethod
 import net.ormr.asmkt.types.ReferenceType
 import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Source
-import net.ormr.jukkas.ast.*
+import net.ormr.jukkas.ir.*
 import net.ormr.jukkas.type.AsmReferenceType
 import net.ormr.jukkas.type.Type
 import net.ormr.jukkas.type.member.TypeMember

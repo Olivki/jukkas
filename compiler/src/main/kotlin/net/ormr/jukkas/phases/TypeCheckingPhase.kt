@@ -19,7 +19,7 @@ package net.ormr.jukkas.phases
 import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Positionable
 import net.ormr.jukkas.Source
-import net.ormr.jukkas.ast.*
+import net.ormr.jukkas.ir.*
 import net.ormr.jukkas.type.ResolvedTypeOrError
 import net.ormr.jukkas.type.Type
 import net.ormr.krautils.lang.ifNotNull

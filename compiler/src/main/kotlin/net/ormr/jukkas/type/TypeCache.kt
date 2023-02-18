@@ -17,8 +17,8 @@
 package net.ormr.jukkas.type
 
 import net.ormr.jukkas.Positionable
-import net.ormr.jukkas.ast.CompilationUnit
-import net.ormr.jukkas.ast.reportSemanticError
+import net.ormr.jukkas.ir.CompilationUnit
+import net.ormr.jukkas.ir.reportSemanticError
 
 class TypeCache internal constructor(private val unit: CompilationUnit) {
     private val entries = hashMapOf<String, ResolvedType>()

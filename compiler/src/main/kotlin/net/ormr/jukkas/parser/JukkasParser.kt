@@ -20,8 +20,8 @@ import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Position
 import net.ormr.jukkas.Positionable
 import net.ormr.jukkas.Source
-import net.ormr.jukkas.ast.*
-import net.ormr.jukkas.ast.FunctionDeclaration
+import net.ormr.jukkas.ir.*
+import net.ormr.jukkas.ir.FunctionDeclaration
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenStream
