@@ -16,9 +16,8 @@
 
 package net.ormr.jukkas.parser.parselets.infix
 
-import net.ormr.jukkas.ir.AnonymousFunctionInvocation
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstAnonymousFunctionInvocation
+import net.ormr.jukkas.ast.AstExpression
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType.COMMA
@@ -32,11 +31,11 @@ object AnonymousFunctionInvocationParselet : InfixParselet {
 
     override fun parse(
         parser: JukkasParser,
-        left: Expression,
+        left: AstExpression,
         token: Token,
-    ): AnonymousFunctionInvocation = parser with {
+    ): AstAnonymousFunctionInvocation = parser with {
         val arguments = parseArguments(COMMA, RIGHT_PAREN, ::parseInvocationArgument)
         val end = consume(RIGHT_PAREN)
-        AnonymousFunctionInvocation(left, arguments) withPosition createSpan(token, end)
+        AstAnonymousFunctionInvocation(left, arguments, createSpan(token, end))
     }
 }

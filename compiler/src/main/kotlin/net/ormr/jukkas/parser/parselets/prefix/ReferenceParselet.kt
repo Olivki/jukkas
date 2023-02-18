@@ -16,10 +16,9 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.DefinitionReference
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.FunctionInvocation
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstExpression
+import net.ormr.jukkas.ast.AstFunctionInvocation
+import net.ormr.jukkas.ast.AstIdentifierReference
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType.COMMA
@@ -28,14 +27,14 @@ import net.ormr.jukkas.lexer.TokenType.RIGHT_PAREN
 import net.ormr.jukkas.parser.JukkasParser
 
 object ReferenceParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): Expression = parser with {
+    override fun parse(parser: JukkasParser, token: Token): AstExpression = parser with {
         when {
             match(LEFT_PAREN) -> {
                 val arguments = parseArguments(COMMA, RIGHT_PAREN, ::parseInvocationArgument)
                 val end = consume(RIGHT_PAREN)
-                FunctionInvocation(token.text, arguments) withPosition createSpan(token, end)
+                AstFunctionInvocation(token, arguments, createSpan(token, end))
             }
-            else -> DefinitionReference(token.text) withPosition token
+            else -> AstIdentifierReference(token)
         }
     }
 }

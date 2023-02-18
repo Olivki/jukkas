@@ -16,36 +16,78 @@
 
 package net.ormr.jukkas
 
-import net.ormr.jukkas.ir.BasicArgument
-import net.ormr.jukkas.ir.BinaryOperation
+import net.ormr.jukkas.ast.AstBasicTypeName
+import net.ormr.jukkas.ast.AstBinaryOperation
+import net.ormr.jukkas.ast.AstBooleanLiteral
+import net.ormr.jukkas.ast.AstExpression
+import net.ormr.jukkas.ast.AstFunction
+import net.ormr.jukkas.ast.AstFunctionArgument
+import net.ormr.jukkas.ast.AstFunctionInvocation
+import net.ormr.jukkas.ast.AstIdentifierReference
+import net.ormr.jukkas.ast.AstImport
+import net.ormr.jukkas.ast.AstImportEntry
+import net.ormr.jukkas.ast.AstIntLiteral
+import net.ormr.jukkas.ast.AstInvocationArgument
+import net.ormr.jukkas.ast.AstMemberAccessOperation
+import net.ormr.jukkas.ast.AstStringLiteral
+import net.ormr.jukkas.ast.AstTypeName
 import net.ormr.jukkas.ir.BinaryOperator
-import net.ormr.jukkas.ir.BooleanLiteral
-import net.ormr.jukkas.ir.DefaultArgument
-import net.ormr.jukkas.ir.DefinitionReference
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.IntLiteral
-import net.ormr.jukkas.ir.InvocationArgument
-import net.ormr.jukkas.ir.StringLiteral
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.TypeName
+import net.ormr.jukkas.lexer.Token
+import net.ormr.jukkas.lexer.TokenType
 
-fun boolean(value: Boolean): BooleanLiteral = BooleanLiteral(value)
+fun boolean(value: Boolean) = AstBooleanLiteral(value, ROOT_POINT)
 
-fun int(value: Int): IntLiteral = IntLiteral(value)
+fun int(value: Int) = AstIntLiteral(value, ROOT_POINT)
 
-fun string(value: String): StringLiteral = StringLiteral(value)
+fun string(value: String) = AstStringLiteral(value, ROOT_POINT)
 
-fun reference(name: String): DefinitionReference = DefinitionReference(name)
+fun identifierToken(text: String) = Token(TokenType.IDENTIFIER, text, ROOT_POINT)
 
-fun binary(left: Expression, operator: BinaryOperator, right: Expression): BinaryOperation =
-    BinaryOperation(left, operator, right)
+fun reference(name: String) = AstIdentifierReference(identifierToken(name))
 
-fun invArg(value: Expression, name: String? = null): InvocationArgument = InvocationArgument(value, name)
+fun binary(
+    left: AstExpression,
+    operator: BinaryOperator,
+    right: AstExpression,
+) = AstBinaryOperation(left, operator, identifierToken(operator.symbol), right, ROOT_POINT)
 
-fun arg(name: String, type: Type): BasicArgument = BasicArgument(name, type)
+fun memberAccess(
+    left: AstExpression,
+    isSafeAccess: Boolean,
+    right: AstExpression,
+) = AstMemberAccessOperation(left, isSafeAccess, identifierToken(if (isSafeAccess) "." else "?."), right, ROOT_POINT)
 
-fun arg(name: String, type: Type, default: Expression): DefaultArgument = DefaultArgument(name, type, default)
+fun function(
+    name: String,
+    arguments: List<AstFunctionArgument>,
+    body: AstExpression?,
+    returnType: AstTypeName?,
+) = AstFunction(identifierToken(name), arguments, body, returnType, ROOT_POINT)
 
-private val rootPoint = Point.of(0, 0, 0, 0)
+fun import(
+    path: String,
+    entries: List<AstImportEntry>,
+) = AstImport(string(path), entries, ROOT_POINT)
 
-fun typeName(name: String, position: Position = rootPoint): TypeName = TypeName(position, name)
+fun importEntry(
+    name: String,
+    alias: String? = null,
+) = AstImportEntry(identifierToken(name), alias?.let(::identifierToken), ROOT_POINT)
+
+fun invArg(value: AstExpression, name: String? = null) =
+    AstInvocationArgument(name?.let(::identifierToken), value, ROOT_POINT)
+
+fun arg(
+    name: String,
+    type: AstTypeName,
+    default: AstExpression? = null,
+) = AstFunctionArgument(identifierToken(name), type, default, ROOT_POINT)
+
+fun invocation(
+    name: String,
+    arguments: List<AstInvocationArgument>,
+) = AstFunctionInvocation(identifierToken(name), arguments, ROOT_POINT)
+
+fun typeName(name: String) = AstBasicTypeName(identifierToken(name), ROOT_POINT)
+
+val ROOT_POINT = Point.of(0, 0, 0, 0)

@@ -16,10 +16,10 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.ast.AstExpression
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
 
 fun interface PrefixParselet {
-    fun parse(parser: JukkasParser, token: Token): Expression
+    fun parse(parser: JukkasParser, token: Token): AstExpression
 }

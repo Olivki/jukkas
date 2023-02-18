@@ -16,7 +16,7 @@
 
 package net.ormr.jukkas.parser.parselets.infix
 
-import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.ast.AstExpression
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
 
@@ -25,7 +25,7 @@ interface InfixParselet {
 
     fun parse(
         parser: JukkasParser,
-        left: Expression,
+        left: AstExpression,
         token: Token,
-    ): Expression
+    ): AstExpression
 }

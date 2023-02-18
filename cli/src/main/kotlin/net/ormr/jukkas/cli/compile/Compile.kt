@@ -53,7 +53,8 @@ class Compile : CliktCommand(help = "Compile stuff", printHelpOnEmptyArgs = true
         val terminal = currentContext.terminal
         val classes = JukkasParser
             .parseFile(file)
-            .flatMap { TypeResolutionPhase.run(it.value) }
+        error("Not implemented at the moment")
+            /*.flatMap { TypeResolutionPhase.run(it.value) }
             .flatMap { TypeCheckingPhase.run(it.value) }
             .flatMap { BytecodeGenerationPhase.run(it.value) }
             .getOrElse { reporter.printErrors(terminal, it) }
@@ -70,7 +71,7 @@ class Compile : CliktCommand(help = "Compile stuff", printHelpOnEmptyArgs = true
             val clz = loader.defineClass(name, bytes)
             val method = clz.methods.single { it.isStatic && it.name == "main" }
             method.invoke(null)
-        }
+        }*/
     }
 
     class ByteClassLoader(

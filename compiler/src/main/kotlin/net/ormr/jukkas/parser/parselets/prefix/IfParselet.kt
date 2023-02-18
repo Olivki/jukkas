@@ -16,8 +16,7 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.ConditionalBranch
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstConditionalBranch
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType.ELSE
@@ -28,15 +27,13 @@ import net.ormr.jukkas.lexer.TokenType.RIGHT_PAREN
 import net.ormr.jukkas.parser.JukkasParser
 
 object IfParselet : PrefixParselet {
-    // TODO: the way we're currently doing this means that if statements will need to have a ; at the end
-    override fun parse(parser: JukkasParser, token: Token): ConditionalBranch = parser with {
+    override fun parse(parser: JukkasParser, token: Token): AstConditionalBranch = parser with {
         consume(LEFT_PAREN)
         val condition = parseExpression()
         consume(RIGHT_PAREN)
         val thenBranch = parseBlockOrExpression(LEFT_BRACE, RIGHT_BRACE)
         val elseBranch = if (match(ELSE)) parseBlockOrExpression(LEFT_BRACE, RIGHT_BRACE) else null
-        // TODO: is this a logical span for a conditional branch?
         val position = elseBranch?.let { createSpan(token, it) } ?: createSpan(token, thenBranch)
-        ConditionalBranch(condition, thenBranch, elseBranch) withPosition position
+        AstConditionalBranch(condition, thenBranch, elseBranch, position)
     }
 }

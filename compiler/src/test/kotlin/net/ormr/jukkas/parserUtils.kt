@@ -16,9 +16,9 @@
 
 package net.ormr.jukkas
 
-import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.ast.AstExpression
+import net.ormr.jukkas.ast.AstStatement
 import net.ormr.jukkas.ir.Node
-import net.ormr.jukkas.ir.Statement
 import net.ormr.jukkas.parser.JukkasParser
 
 inline fun <T : Node> parseNode(
@@ -26,8 +26,8 @@ inline fun <T : Node> parseNode(
     crossinline fn: (JukkasParser) -> T,
 ): JukkasResult<T> = JukkasParser.parse(Source.Text(source), fn)
 
-fun parseStatement(source: String): JukkasResult<Statement> =
+fun parseStatement(source: String): JukkasResult<AstStatement> =
     JukkasParser.parse(Source.Text(source), JukkasParser::parseStatement)
 
-fun parseExpression(source: String): JukkasResult<Expression> =
+fun parseExpression(source: String): JukkasResult<AstExpression> =
     JukkasParser.parse(Source.Text(source), JukkasParser::parseExpression)

@@ -17,23 +17,25 @@
 package net.ormr.jukkas.parser
 
 import io.kotest.core.spec.style.FunSpec
-import net.ormr.jukkas.ir.BinaryOperator.DIVISION
-import net.ormr.jukkas.ir.BinaryOperator.MINUS
-import net.ormr.jukkas.ir.BinaryOperator.MULTIPLICATION
-import net.ormr.jukkas.ir.BinaryOperator.PLUS
-import net.ormr.jukkas.ir.FunctionInvocation
-import net.ormr.jukkas.ir.MemberAccessOperation
-import net.ormr.jukkas.ir.StringTemplateExpression
-import net.ormr.jukkas.ir.StringTemplatePart
+import net.ormr.jukkas.ROOT_POINT
+import net.ormr.jukkas.ast.AstStringTemplate
 import net.ormr.jukkas.binary
 import net.ormr.jukkas.boolean
 import net.ormr.jukkas.int
 import net.ormr.jukkas.invArg
+import net.ormr.jukkas.invocation
+import net.ormr.jukkas.ir.BinaryOperator.DIVISION
+import net.ormr.jukkas.ir.BinaryOperator.MINUS
+import net.ormr.jukkas.ir.BinaryOperator.MULTIPLICATION
+import net.ormr.jukkas.ir.BinaryOperator.PLUS
+import net.ormr.jukkas.memberAccess
 import net.ormr.jukkas.parseExpression
 import net.ormr.jukkas.reference
 import net.ormr.jukkas.shouldBeStructurallyEquivalentTo
 import net.ormr.jukkas.shouldBeSuccess
 import net.ormr.jukkas.string
+import net.ormr.jukkas.ast.AstStringTemplatePart.Expression as ExpressionPart
+import net.ormr.jukkas.ast.AstStringTemplatePart.Literal as LiteralPart
 
 class ExpressionParsingTest : FunSpec({
     test("'false' should parse to BooleanLiteral(false)") {
@@ -74,19 +76,20 @@ class ExpressionParsingTest : FunSpec({
 
     test("\"foo {1 + 2} bar\" should parse to StringExpression(...)") {
         parseExpression("\"foo \\{1 + 2} bar\"") shouldBeSuccess { expr, _ ->
-            expr shouldBeStructurallyEquivalentTo StringTemplateExpression(
+            expr shouldBeStructurallyEquivalentTo AstStringTemplate(
                 listOf(
-                    StringTemplatePart.LiteralPart(string("foo ")),
-                    StringTemplatePart.ExpressionPart(binary(int(1), PLUS, int(2))),
-                    StringTemplatePart.LiteralPart(string(" bar")),
-                )
+                    LiteralPart(string("foo "), ROOT_POINT),
+                    ExpressionPart(binary(int(1), PLUS, int(2)), ROOT_POINT),
+                    LiteralPart(string(" bar"), ROOT_POINT),
+                ),
+                ROOT_POINT,
             )
         }
     }
 
     test("'foo(1, bar = 2, 3)' should parse to FunctionInvocation(...)") {
         parseExpression("foo(1, bar = 2, 3)") shouldBeSuccess { expr, _ ->
-            expr shouldBeStructurallyEquivalentTo FunctionInvocation(
+            expr shouldBeStructurallyEquivalentTo invocation(
                 "foo",
                 listOf(
                     invArg(int(1)),
@@ -99,15 +102,15 @@ class ExpressionParsingTest : FunSpec({
 
     test("'foo.bar(1)' should parse to (foo.bar (1))") {
         parseExpression("foo.bar(1)") shouldBeSuccess { expr, _ ->
-            expr shouldBeStructurallyEquivalentTo MemberAccessOperation(
+            expr shouldBeStructurallyEquivalentTo memberAccess(
                 reference("foo"),
-                FunctionInvocation(
+                isSafeAccess = false,
+                invocation(
                     "bar",
                     listOf(
                         invArg(int(1)),
                     ),
                 ),
-                isSafe = false,
             )
         }
     }

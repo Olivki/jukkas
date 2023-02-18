@@ -16,34 +16,35 @@
 
 package net.ormr.jukkas.parser.parselets.infix
 
-import net.ormr.jukkas.ir.AssignmentOperation
-import net.ormr.jukkas.ir.AssignmentOperator
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstAssignmentOperation
+import net.ormr.jukkas.ast.AstExpression
 import net.ormr.jukkas.createSpan
+import net.ormr.jukkas.ir.AssignmentOperator
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
 import net.ormr.jukkas.parser.Precedence
 
 /**
- * Produces an [AssignmentOperation] instance.
+ * Produces an [AstAssignmentOperation] instance.
  *
  * Assignments are *not* expression in Jukkas, they're still parsed *like* expressions here, this is to avoid making
  * the parser more complex that it needs to be. Usage of assignments as expression *(`if (a = b)`)* is verified at a
  * later stage.
  */
 object AssignmentParselet : InfixParselet {
+    private val knownOperators = AssignmentOperator.values().mapTo(hashSetOf()) { it.symbol }
+
     override val precedence: Int
         get() = Precedence.ASSIGNMENT
 
     override fun parse(
         parser: JukkasParser,
-        left: Expression,
+        left: AstExpression,
         token: Token,
-    ): AssignmentOperation = parser with {
-        val operator =
-            AssignmentOperator.fromSymbolOrNull(token.text) ?: (token syntaxError "Unknown assignment operator")
+    ): AstAssignmentOperation = parser with {
+        val operator = AssignmentOperator.fromSymbolOrNull(token.text)
+            ?: (token syntaxError "Unknown assignment operator")
         val value = parseExpression(precedence - 1) // left to right
-        AssignmentOperation(left, operator, value) withPosition createSpan(left, value)
+        AstAssignmentOperation(left, operator, token, value, createSpan(left, value))
     }
 }

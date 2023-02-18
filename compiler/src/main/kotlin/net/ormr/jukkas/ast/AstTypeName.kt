@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.parser.parselets.prefix
+package net.ormr.jukkas.ast
 
-import net.ormr.jukkas.ir.SymbolLiteral
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.Position
+import net.ormr.jukkas.StructurallyComparable
 import net.ormr.jukkas.lexer.Token
-import net.ormr.jukkas.parser.JukkasParser
 
-object SymbolParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): SymbolLiteral =
-        SymbolLiteral(token.text.drop(1)) withPosition token
+sealed interface AstTypeName : AstNode {
+    fun asString(): String
+}
+
+data class AstBasicTypeName(val name: Token, override val position: Position) : AstTypeName {
+    override fun asString(): String = name.text
+
+    override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
+        other is AstBasicTypeName && name isStructurallyEquivalent other.name
 }

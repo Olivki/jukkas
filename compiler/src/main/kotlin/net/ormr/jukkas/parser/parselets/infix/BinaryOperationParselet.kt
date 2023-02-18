@@ -16,25 +16,22 @@
 
 package net.ormr.jukkas.parser.parselets.infix
 
-import net.ormr.jukkas.ir.BinaryOperation
-import net.ormr.jukkas.ir.BinaryOperator
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstBinaryOperation
+import net.ormr.jukkas.ast.AstExpression
 import net.ormr.jukkas.createSpan
+import net.ormr.jukkas.ir.BinaryOperator
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
 
 class BinaryOperationParselet(override val precedence: Int) : InfixParselet {
     override fun parse(
         parser: JukkasParser,
-        left: Expression,
+        left: AstExpression,
         token: Token,
-    ): BinaryOperation = parser with {
-        val operator = BinaryOperator.fromSymbolOrNull(token.text) ?: (token syntaxError "Unknown binary operator")
+    ): AstBinaryOperation = parser with {
+        val operator = BinaryOperator.fromSymbolOrNull(token.text)
+            ?: (token syntaxError "Unknown assignment operator")
         val right = parseExpression(precedence)
-        // TODO: createSpan(left, right) could probably end creating a too long span?
-        // but createSpan(token, right) doesn't feel like a proper span for
-        // a binary operation
-        BinaryOperation(left, operator, right) withPosition createSpan(left, right)
+        AstBinaryOperation(left, operator, token, right, createSpan(left, right))
     }
 }

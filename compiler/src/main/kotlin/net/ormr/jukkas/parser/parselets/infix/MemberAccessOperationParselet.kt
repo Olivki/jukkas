@@ -16,9 +16,8 @@
 
 package net.ormr.jukkas.parser.parselets.infix
 
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.MemberAccessOperation
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstExpression
+import net.ormr.jukkas.ast.AstMemberAccessOperation
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType
@@ -31,16 +30,15 @@ object MemberAccessOperationParselet : InfixParselet {
 
     override fun parse(
         parser: JukkasParser,
-        left: Expression,
+        left: AstExpression,
         token: Token,
-    ): MemberAccessOperation = parser with {
-        val isSafe = when (token.type) {
+    ): AstMemberAccessOperation = parser with {
+        val isSafeAccess = when (token.type) {
             TokenType.DOT -> false
             TokenType.HOOK_DOT -> true
-            else -> token syntaxError "Unknown call operator"
+            else -> token syntaxError "Unknown member access operator"
         }
         val right = parseExpression(precedence)
-        // TODO: createSpan(token, value.findPosition().startPoint.end) or something?
-        MemberAccessOperation(left, right, isSafe) withPosition createSpan(left, right)
+        AstMemberAccessOperation(left, isSafeAccess, token, right, createSpan(left, right))
     }
 }

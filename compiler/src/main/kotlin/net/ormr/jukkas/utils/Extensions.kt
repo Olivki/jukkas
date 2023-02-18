@@ -1,5 +1,6 @@
 package net.ormr.jukkas.utils
 
+import net.ormr.jukkas.StructurallyComparable
 import net.ormr.jukkas.ir.Node
 
 private val unicodePattern = "\\\\u([0-9A-Fa-f]{4})".toRegex()
@@ -19,7 +20,7 @@ inline fun <T> bothNullOrEquivalent(
     else -> predicate(first, second)
 }
 
-fun checkStructuralEquivalence(first: Node?, second: Node?): Boolean =
+fun checkStructuralEquivalence(first: StructurallyComparable?, second: StructurallyComparable?): Boolean =
     bothNullOrEquivalent(first, second) { a, b -> a.isStructurallyEquivalent(b) }
 
 /**
@@ -30,6 +31,6 @@ fun checkStructuralEquivalence(first: Node?, second: Node?): Boolean =
  * are made.
  */
 fun checkStructuralEquivalence(
-    a: Collection<Node>,
-    b: Collection<Node>,
+    a: Collection<StructurallyComparable>,
+    b: Collection<StructurallyComparable>,
 ): Boolean = a.size == b.size && (a.asSequence() zip b.asSequence()).all { (a, b) -> a.isStructurallyEquivalent(b) }

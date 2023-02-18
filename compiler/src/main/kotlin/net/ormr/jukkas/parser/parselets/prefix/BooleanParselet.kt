@@ -16,19 +16,18 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.BooleanLiteral
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstBooleanLiteral
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType
 import net.ormr.jukkas.parser.JukkasParser
 
 object BooleanParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): BooleanLiteral = parser with {
+    override fun parse(parser: JukkasParser, token: Token): AstBooleanLiteral = parser with {
         val value = when (token.type) {
             TokenType.TRUE -> true
             TokenType.FALSE -> false
             else -> token syntaxError "Expected true or false"
         }
-        BooleanLiteral(value) withPosition token
+        AstBooleanLiteral(value, token.point)
     }
 }

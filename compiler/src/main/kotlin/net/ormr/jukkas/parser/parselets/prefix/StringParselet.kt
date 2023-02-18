@@ -16,62 +16,67 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.StringLiteral
-import net.ormr.jukkas.ir.StringTemplateExpression
-import net.ormr.jukkas.ir.StringTemplatePart
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstExpression
+import net.ormr.jukkas.ast.AstStringLiteral
+import net.ormr.jukkas.ast.AstStringTemplate
+import net.ormr.jukkas.ast.AstStringTemplatePart
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
-import net.ormr.jukkas.lexer.TokenType
 import net.ormr.jukkas.lexer.TokenType.ESCAPE_SEQUENCE
 import net.ormr.jukkas.lexer.TokenType.STRING_CONTENT
+import net.ormr.jukkas.lexer.TokenType.STRING_END
 import net.ormr.jukkas.lexer.TokenType.STRING_TEMPLATE_END
 import net.ormr.jukkas.lexer.TokenType.STRING_TEMPLATE_START
 import net.ormr.jukkas.parser.JukkasParser
 import net.ormr.jukkas.utils.unescapeUnicode
+import net.ormr.jukkas.ast.AstStringTemplatePart.Expression as ExpressionPart
+import net.ormr.jukkas.ast.AstStringTemplatePart.Literal as LiteralPart
 
 object StringParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): Expression = parser with {
+    @Suppress("UNCHECKED_CAST")
+    override fun parse(parser: JukkasParser, token: Token): AstExpression = parser with {
         val parts = buildList {
-            while (!check(TokenType.STRING_END) && hasMore()) {
+            while (!check(STRING_END) && hasMore()) {
                 add(parseLiteralOrTemplate(parser))
             }
         }
-        val end = consume(TokenType.STRING_END)
+        val end = consume(STRING_END)
 
         when {
             // If the string does not have any template variables, just join all parts into a single literal
             // TODO: may be a good idea to also merge consecutive literals
-            parts.all { it is StringTemplatePart.LiteralPart } -> {
-                val literalParts = parts as List<StringTemplatePart.LiteralPart>
-                StringLiteral(literalParts.joinToString("") { it.literal.value }) withPosition createSpan(token, end)
+            parts.all { it is LiteralPart } -> {
+                val literalParts = parts as List<LiteralPart>
+                val value = literalParts.joinToString("") { it.literal.value }
+                AstStringLiteral(value, createSpan(token, end))
             }
-            else -> StringTemplateExpression(parts) withPosition createSpan(token, end)
+            else -> AstStringTemplate(parts, createSpan(token, end))
         }
     }
 
-    private fun parseLiteralOrTemplate(parser: JukkasParser): StringTemplatePart = parser with {
+    private fun parseLiteralOrTemplate(parser: JukkasParser): AstStringTemplatePart = parser with {
         when {
             match(STRING_CONTENT) -> {
                 val content = previous()
                 val text = content.text
-                val literal = StringLiteral(text) withPosition content
-                StringTemplatePart.LiteralPart(literal) withPosition content
+                val position = content.point
+                val literal = AstStringLiteral(text, position)
+                LiteralPart(literal, position)
             }
             match(ESCAPE_SEQUENCE) -> {
                 val sequence = previous()
                 val text = previous().text.unescapeUnicode()
-                val literal = StringLiteral(text) withPosition sequence
-                StringTemplatePart.LiteralPart(literal) withPosition sequence
+                val position = sequence.point
+                val literal = AstStringLiteral(text, position)
+                LiteralPart(literal, position)
             }
             match(STRING_TEMPLATE_START) -> {
                 val start = current()
                 val expression = parseExpression()
                 val end = consume(STRING_TEMPLATE_END)
-                StringTemplatePart.ExpressionPart(expression withPosition createSpan(start, end))
+                ExpressionPart(expression, createSpan(start, end))
             }
-            else -> error("Unexpected token in string: <${consume()}>")
+            else -> current() syntaxError "Unexpected token in string <${current()}>"
         }
     }
 }

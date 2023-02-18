@@ -91,8 +91,6 @@ DecimalIntegerLiteral = (0 | ([1-9]({DigitOrUnderscore})*))
 HexIntegerLiteral = 0[Xx]({HexDigitOrUnderscore})*
 BinIntegerLiteral = 0[Bb]({DigitOrUnderscore})*
 
-SymbolLiteral = "'" {IdentifierPart}*
-
 CharacterLiteral = "'" ([^\\\'\n] | {EscapeSequence})* "'"
 UnicodeEscapeCode = {HexDigit}{HexDigit}{HexDigit}{HexDigit}
 UnicodeEscapeName = "{" ([:letter:])* "}"
@@ -134,8 +132,6 @@ TemplateStart = \\\{
 {CharacterLiteral} { return CHAR_LITERAL.INSTANCE; }
 
 {IntegerLiteral} { return INT_LITERAL.INSTANCE; }
-
-{SymbolLiteral} { return SYMBOL_LITERAL.INSTANCE; }
 
 // quote
 <QUOTE> {

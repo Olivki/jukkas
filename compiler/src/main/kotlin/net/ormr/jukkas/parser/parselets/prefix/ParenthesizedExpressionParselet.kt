@@ -16,18 +16,16 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstParenthesizedExpression
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType.RIGHT_PAREN
 import net.ormr.jukkas.parser.JukkasParser
 
-// (expr) -> expr
 object ParenthesizedExpressionParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): Expression = parser with {
+    override fun parse(parser: JukkasParser, token: Token): AstParenthesizedExpression = parser with {
         val expr = parseExpression()
         val end = consume(RIGHT_PAREN)
-        expr withPosition createSpan(token, end)
+        AstParenthesizedExpression(expr, createSpan(token, end))
     }
 }

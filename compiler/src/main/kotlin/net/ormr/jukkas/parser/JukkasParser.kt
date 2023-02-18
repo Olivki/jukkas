@@ -17,49 +17,35 @@
 package net.ormr.jukkas.parser
 
 import net.ormr.jukkas.JukkasResult
-import net.ormr.jukkas.Position
-import net.ormr.jukkas.Positionable
 import net.ormr.jukkas.Source
-import net.ormr.jukkas.ir.*
-import net.ormr.jukkas.ir.FunctionDeclaration
+import net.ormr.jukkas.ast.AstBasicTypeName
+import net.ormr.jukkas.ast.AstBlock
+import net.ormr.jukkas.ast.AstCompilationUnit
+import net.ormr.jukkas.ast.AstExpression
+import net.ormr.jukkas.ast.AstExpressionStatement
+import net.ormr.jukkas.ast.AstFunction
+import net.ormr.jukkas.ast.AstFunctionArgument
+import net.ormr.jukkas.ast.AstImport
+import net.ormr.jukkas.ast.AstImportEntry
+import net.ormr.jukkas.ast.AstInvocationArgument
+import net.ormr.jukkas.ast.AstLocalVariable
+import net.ormr.jukkas.ast.AstProperty
+import net.ormr.jukkas.ast.AstStatement
+import net.ormr.jukkas.ast.AstStringLiteral
+import net.ormr.jukkas.ast.AstTopLevelNode
+import net.ormr.jukkas.ast.AstTypeName
 import net.ormr.jukkas.createSpan
+import net.ormr.jukkas.ir.Expression
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenStream
 import net.ormr.jukkas.lexer.TokenType
 import net.ormr.jukkas.lexer.TokenType.*
 import net.ormr.jukkas.parser.parselets.prefix.PrefixParselet
 import net.ormr.jukkas.parser.parselets.prefix.StringParselet
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.TypeName
-import net.ormr.jukkas.type.UnknownType
-import net.ormr.jukkas.utils.identifierName
 import java.nio.file.Path
 
 class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
-    private val tables = ArrayDeque<Table>()
-    val table: Table
-        get() = tables.firstOrNull() ?: error("No tables found")
-
-    fun newTable(): Table = Table(tables.firstOrNull())
-
-    fun pushTable(table: Table = newTable()) {
-        tables.addFirst(table)
-    }
-
-    fun popTable() {
-        tables.removeFirst()
-    }
-
-    inline fun <T> newBlock(table: Table = newTable(), block: () -> T): T {
-        pushTable(table)
-        return try {
-            block()
-        } finally {
-            popTable()
-        }
-    }
-
-    fun parseCompilationUnit(): CompilationUnit = newBlock(Table()) {
+    fun parseCompilationUnit(): AstCompilationUnit {
         val imports = buildList {
             while (hasMore()) {
                 if (!check(IMPORT)) break
@@ -73,7 +59,7 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
         }
         val end = consume(END_OF_FILE)
         val position = children.firstOrNull()?.let { createSpan(it, end) } ?: end.findPosition()
-        return CompilationUnit(source, position, imports, children, table)
+        return AstCompilationUnit(source, imports, children, position)
     }
 
     fun consumeIdentifier(): Token = consume(IDENTIFIERS, "identifier")
@@ -101,7 +87,7 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
      *
      * @see [parseExpression]
      */
-    fun parseExpressionOrNull(precedence: Int = 0): Expression? {
+    fun parseExpressionOrNull(precedence: Int = 0): AstExpression? {
         var token = consume()
         val prefix = Grammar.getPrefixParselet(token)
         if (prefix == null) {
@@ -119,25 +105,25 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
         return left
     }
 
-    fun parseExpression(precedence: Int = 0): Expression =
+    fun parseExpression(precedence: Int = 0): AstExpression =
         parseExpressionOrNull(precedence) ?: (current() syntaxError "Expecting expression got ${previous().type}")
 
-    fun parseImport(): Import? = withSynchronization(
+    fun parseImport(): AstImport? = withSynchronization(
         { check<TopSynch>() },
         { null },
     ) {
-        val import = consume(IMPORT)
+        val keyword = consume(IMPORT)
         val pathStart = consume(STRING_START)
         val path = StringParselet.parse(this, pathStart)
         consume(LEFT_BRACE)
         val entries = parseArguments(COMMA, RIGHT_BRACE, ::parseImportEntry)
         val end = consume(RIGHT_BRACE)
         // report error here so we can attempt to properly parse the symbol block first
-        if (path !is StringLiteral) path syntaxError "Only simple strings are allowed as paths"
-        Import(entries, path) withPosition createSpan(import, end)
+        if (path !is AstStringLiteral) path syntaxError "Only simple strings are allowed as paths"
+        AstImport(path, entries, createSpan(keyword, end))
     }
 
-    private fun parseImportEntry(): ImportEntry {
+    private fun parseImportEntry(): AstImportEntry {
         // TODO: handle nested classes identifiers
         val name = consumeIdentifier()
         val alias = when {
@@ -145,10 +131,10 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
             else -> null
         }
         val position = alias?.let { createSpan(name, it) } ?: name.findPosition()
-        return ImportEntry(name.identifierName, alias?.identifierName) withPosition position
+        return AstImportEntry(name, alias, position)
     }
 
-    private fun parseTopLevel(): TopLevel? = withSynchronization(
+    private fun parseTopLevel(): AstTopLevelNode? = withSynchronization(
         { check<TopSynch>() },
         { null },
     ) {
@@ -160,51 +146,43 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
         }
     }
 
-    fun parseTypeName(): TypeName {
+    private fun parseBasicTypeName(): AstBasicTypeName {
         val identifier = consumeIdentifier()
-        return TypeName(identifier.findPosition(), identifier.identifierName)
+        return AstBasicTypeName(identifier, identifier.findPosition())
     }
 
-    fun parseTypeDeclaration(separator: TokenType = COLON): TypeName {
+    fun parseTypeName(): AstTypeName = parseBasicTypeName()
+
+    fun parseTypeDeclaration(separator: TokenType = COLON): AstTypeName {
         consume(separator)
         return parseTypeName()
     }
 
-    fun parseOptionalTypeDeclaration(separator: TokenType = COLON): Type = when {
+    fun parseOptionalTypeDeclaration(separator: TokenType = COLON): AstTypeName? = when {
         check(separator) -> parseTypeDeclaration(separator)
-        else -> UnknownType
+        else -> null
     }
 
-    fun createTypePosition(start: Positionable, type: Type): Position = when (type) {
-        is TypeName -> createSpan(start, type)
-        else -> start.findPosition()
-    }
-
-    private fun parseFunction(): FunctionDeclaration = newBlock {
+    private fun parseFunction(): AstFunction {
         val keyword = consume(FUN)
-        val name = consumeIdentifier().identifierName
+        val name = consumeIdentifier()
         consume(LEFT_PAREN)
-        val arguments = parseArguments(COMMA, RIGHT_PAREN, ::parseDefaultArgument)
+        val arguments = parseArguments(COMMA, RIGHT_PAREN, ::parseFunctionArgument)
         val argEnd = consume(RIGHT_PAREN)
         val returnType = parseOptionalTypeDeclaration(ARROW)
-        val returnTypePosition = (returnType as? TypeName)
+        val returnTypePosition = returnType?.position
         val body = when {
-            match(EQUAL) -> {
-                // TODO: give warning for structures like 'fun() = return;' ?
-                val equal = previous()
-                val expr = parseExpressionStatement()
-                Block(newTable(), listOf(expr)) withPosition createSpan(equal, expr)
-            }
+            match(EQUAL) -> parseExpressionStatement().expression
             match(LEFT_BRACE) -> parseBlock(RIGHT_BRACE)
             // TODO: verify that the function is actually abstract if no body exists in the verifier
             //       and also verify that only class level functions are marked abstract and that stuff
             else -> null
         }
         val position = createSpan(keyword, body ?: returnTypePosition ?: argEnd)
-        return FunctionDeclaration(name, arguments, body, returnType, table) withPosition position
+        return AstFunction(name, arguments, body, returnType, position)
     }
 
-    private fun parseProperty(): Property = TODO()
+    private fun parseProperty(): AstProperty = TODO()
 
     inline fun <T> parseArguments(
         separator: TokenType,
@@ -222,70 +200,51 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
         }
     }
 
-    fun parseInvocationArgument(): InvocationArgument {
+    fun parseInvocationArgument(): AstInvocationArgument {
         val name = consumeIfMatch(IDENTIFIERS, "identifier")
-        // TODO: should we use colon instead?
         if (name != null) consume(EQUAL)
         val value = parseExpression()
-        val position = name?.let { createSpan(it, value) } ?: value
-        return InvocationArgument(value, name?.identifierName) withPosition position
+        val position = name?.let { createSpan(it, value) } ?: value.findPosition()
+        return AstInvocationArgument(name, value, position)
     }
 
-    fun parseBasicArgument(): BasicArgument {
+    fun parseFunctionArgument(): AstFunctionArgument {
         val name = consumeIdentifier()
         val type = parseTypeDeclaration()
-        return BasicArgument(name.identifierName, type) withPosition createSpan(name, type)
+        val default = if (match(EQUAL)) parseExpression() else null
+        val position = default?.let { createSpan(name, it) } ?: createSpan(name, type)
+        return AstFunctionArgument(name, type, default, position)
     }
 
-    fun parseDefaultArgument(): NamedArgument {
-        val name = consumeIdentifier()
-        val identifierName = name.identifierName
-        val type = parseTypeDeclaration()
-        return when (val default = if (match(EQUAL)) parseExpression() else null) {
-            null -> BasicArgument(identifierName, type) withPosition createSpan(name, type)
-            else -> DefaultArgument(identifierName, type, default) withPosition createSpan(name, default)
-        }
-    }
+    private fun parseVariable(): AstLocalVariable = TODO("parseVariable")
 
-    fun parsePatternArgument(): Argument = when {
-        match(LEFT_PAREN) -> {
-            val pattern = parsePattern()
-            PatternArgument(pattern)
-        }
-        else -> parseBasicArgument()
-    }
-
-    fun parsePattern(): Pattern = TODO("parsePattern")
-
-    private fun parseVariable(): LocalVariable = TODO("parseVariable")
-
-    fun parseStatement(): Statement = when {
+    fun parseStatement(): AstStatement = when {
         check(FUN) -> parseFunction()
         check(PROPERTIES) -> parseVariable()
         else -> parseExpressionStatement()
     }
 
-    fun parseExpressionStatement(precedence: Int = 0): ExpressionStatement {
+    fun parseExpressionStatement(precedence: Int = 0): AstExpressionStatement {
         val expr = parseExpression(precedence)
         val end = consume(SEMICOLON)
-        return ExpressionStatement(expr) withPosition createSpan(expr, end)
+        return AstExpressionStatement(expr, createSpan(expr, end))
     }
 
-    fun parseBlockOrExpression(blockStart: TokenType, blockEnd: TokenType): Expression = when {
+    fun parseBlockOrExpression(blockStart: TokenType, blockEnd: TokenType): AstExpression = when {
         match(blockStart) -> parseBlock(blockEnd)
         else -> parseExpression()
     }
 
-    fun parseBlock(blockEnd: TokenType): Block = newBlock {
+    fun parseBlock(blockEnd: TokenType): AstBlock {
         val start = previous()
-        val statements = buildList {
+        val children = buildList {
             while (!check(blockEnd) && hasMore()) {
                 val statement = withSynchronization({ check<BlockSynch>() }, { null }, ::parseStatement) ?: continue
                 add(statement)
             }
         }
         val end = consume(blockEnd)
-        return Block(table, statements) withPosition createSpan(start, end)
+        return AstBlock(children, createSpan(start, end))
     }
 
     inline infix fun <R> with(block: JukkasParser.() -> R): R = run(block)
@@ -309,10 +268,10 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
             }
         }
 
-        fun parseText(text: String): JukkasResult<CompilationUnit> =
+        fun parseText(text: String): JukkasResult<AstCompilationUnit> =
             parse(Source.Text(text), JukkasParser::parseCompilationUnit)
 
-        fun parseFile(file: Path): JukkasResult<CompilationUnit> =
+        fun parseFile(file: Path): JukkasResult<AstCompilationUnit> =
             parse(Source.File(file), JukkasParser::parseCompilationUnit)
     }
 }

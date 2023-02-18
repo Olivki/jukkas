@@ -19,9 +19,9 @@ package net.ormr.jukkas.parser
 import io.kotest.core.spec.style.FunSpec
 import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Source
-import net.ormr.jukkas.ir.Import
-import net.ormr.jukkas.ir.ImportEntry
-import net.ormr.jukkas.ir.StringLiteral
+import net.ormr.jukkas.ast.AstImport
+import net.ormr.jukkas.import
+import net.ormr.jukkas.importEntry
 import net.ormr.jukkas.shouldBeStructurallyEquivalentTo
 import net.ormr.jukkas.shouldBeSuccess
 
@@ -29,21 +29,21 @@ class ImportParsingTest : FunSpec({
     context("Parse basic import") {
         test("import Foo") {
             parseImport("import \"foo/bar\" { Foo }") shouldBeSuccess { import, _ ->
-                import shouldBeStructurallyEquivalentTo Import(
-                    listOf(ImportEntry("Foo")),
-                    StringLiteral("foo/bar"),
+                import shouldBeStructurallyEquivalentTo import(
+                    "foo/bar",
+                    listOf(importEntry("Foo")),
                 )
             }
         }
 
         test("import Foo, Bar") {
             parseImport("import \"foo/bar\" { Foo, Bar }") shouldBeSuccess { import, _ ->
-                import shouldBeStructurallyEquivalentTo Import(
+                import shouldBeStructurallyEquivalentTo import(
+                    "foo/bar",
                     listOf(
-                        ImportEntry("Foo"),
-                        ImportEntry("Bar"),
+                        importEntry("Foo"),
+                        importEntry("Bar"),
                     ),
-                    StringLiteral("foo/bar"),
                 )
             }
         }
@@ -52,26 +52,26 @@ class ImportParsingTest : FunSpec({
     context("Parse alias import") {
         test("import Foo as Fooy") {
             parseImport("import \"foo/bar\" { Foo as Fooy }") shouldBeSuccess { import, _ ->
-                import shouldBeStructurallyEquivalentTo Import(
-                    listOf(ImportEntry("Foo", "Fooy")),
-                    StringLiteral("foo/bar"),
+                import shouldBeStructurallyEquivalentTo import(
+                    "foo/bar",
+                    listOf(importEntry("Foo", "Fooy")),
                 )
             }
         }
 
         test("import Foo as Fooy, Bar") {
             parseImport("import \"foo/bar\" { Foo as Fooy, Bar }") shouldBeSuccess { import, _ ->
-                import shouldBeStructurallyEquivalentTo Import(
+                import shouldBeStructurallyEquivalentTo import(
+                    "foo/bar",
                     listOf(
-                        ImportEntry("Foo", "Fooy"),
-                        ImportEntry("Bar"),
+                        importEntry("Foo", "Fooy"),
+                        importEntry("Bar"),
                     ),
-                    StringLiteral("foo/bar"),
                 )
             }
         }
     }
 })
 
-private fun parseImport(source: String): JukkasResult<Import> =
+private fun parseImport(source: String): JukkasResult<AstImport> =
     JukkasParser.parse(Source.Text(source)) { parseImport() ?: (current() syntaxError "Failed to parse") }

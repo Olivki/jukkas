@@ -19,12 +19,14 @@ package net.ormr.jukkas
 import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.should
-import net.ormr.jukkas.ir.Node
 import net.ormr.jukkas.reporter.Message
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.typeOf
 
-infix fun Node.shouldBeStructurallyEquivalentTo(other: Node) {
+infix fun StructurallyComparable.shouldBeStructurallyEquivalentTo(other: StructurallyComparable) {
     this should beStructurallyEquivalentTo(other)
 }
 
@@ -57,13 +59,41 @@ fun JukkasResult<*>.shouldBeSuccess() {
     this should beSuccess()
 }
 
-fun beStructurallyEquivalentTo(other: Node) = object : Matcher<Node> {
-    override fun test(value: Node): MatcherResult = MatcherResult(
+fun beStructurallyEquivalentTo(other: StructurallyComparable) = object : Matcher<StructurallyComparable> {
+    override fun test(value: StructurallyComparable): MatcherResult = MatcherResult(
         value.isStructurallyEquivalent(other),
-        { "<$value> should be equivalent to <$other>" },
-        { "<$value> should not be structurally equivalent to <$other>" },
+        { "<${stringifyInstance(value)}> should be equivalent to <${stringifyInstance(other)}>" },
+        { "<${stringifyInstance(value)}> should not be structurally equivalent to <${stringifyInstance(other)}>" },
     )
 }
+
+private fun stringify(value: Any?): String = when (value) {
+    null -> "null"
+    is String -> "\"$value\""
+    is StructurallyComparable -> stringifyInstance(value)
+    is Iterable<*> -> value.joinToString(prefix = "[", postfix = "]") { stringify(it) }
+    else -> value.toString()
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun stringifyInstance(instance: StructurallyComparable): String = buildString {
+    val clz = instance::class
+    append(clz.simpleName!!)
+    append('(')
+    clz
+        .declaredMemberProperties
+        .asSequence()
+        .filter { it.returnType != pointType && it.returnType != spanType }
+        .filter { it.name != "position" }
+        .joinTo(this) {
+            val value = (it as KProperty1<StructurallyComparable, Any?>).get(instance)
+            "${it.name}=${stringify(value)}"
+        }
+    append(')')
+}
+
+private val pointType = typeOf<Point>()
+private val spanType = typeOf<Span>()
 
 fun beFailure() = object : Matcher<JukkasResult<*>> {
     override fun test(value: JukkasResult<*>): MatcherResult = MatcherResult(

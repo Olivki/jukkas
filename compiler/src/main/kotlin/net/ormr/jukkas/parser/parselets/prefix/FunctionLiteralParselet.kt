@@ -16,55 +16,14 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.LambdaDeclaration
-import net.ormr.jukkas.ir.withPosition
-import net.ormr.jukkas.createSpan
+import net.ormr.jukkas.ast.AstLambda
 import net.ormr.jukkas.lexer.Token
-import net.ormr.jukkas.lexer.TokenType.ARROW
-import net.ormr.jukkas.lexer.TokenType.COMMA
-import net.ormr.jukkas.lexer.TokenType.RIGHT_BRACE
-import net.ormr.jukkas.lexer.TokenType.VERTICAL_LINE
 import net.ormr.jukkas.parser.JukkasParser
-import net.ormr.jukkas.type.UnknownType
 
-/**
- * Parses an empty block as a function.
- *
- * For example:
- * ```jukkas
- *  val func = { person: Person, any: Anything ->
- *      // stuff
- *  };
- * ```
- *
- * ```jukkas
- *  val func = { (name, age: personAge, gender: _), _ ->
- *      // stuff
- *  };
- * ```
- */
 object FunctionLiteralParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): LambdaDeclaration = parser with {
-        newBlock {
-            // TODO: we're using || to separate arguments for now, remove this at a later point,
-            //       will require arbitrary lookahead tho
-            val arguments = when {
-                check(VERTICAL_LINE) -> {
-                    consume()
-                    val arguments = parseArguments(COMMA, VERTICAL_LINE, ::parsePatternArgument)
-                    consume(VERTICAL_LINE)
-                    consume(ARROW)
-                    arguments
-                }
-                else -> {
-                    if (check(ARROW)) consume()
-                    emptyList()
-                }
-            }
-            // TODO: set the end of the position of this block to its last child
-            val body = parseBlock(RIGHT_BRACE)
-            val end = previous()
-            LambdaDeclaration(arguments, body, UnknownType, table) withPosition createSpan(token, end)
-        }
+    override fun parse(parser: JukkasParser, token: Token): AstLambda = parser with {
+        // TODO: we're using || to separate arguments for now, remove this at a later point,
+        //       will require arbitrary lookahead tho
+        TODO("Implement FunctionLiteral parsing")
     }
 }

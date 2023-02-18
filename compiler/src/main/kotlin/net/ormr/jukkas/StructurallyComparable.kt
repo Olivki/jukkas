@@ -25,5 +25,5 @@ interface StructurallyComparable {
      * Structural equivalence checks are intended for use via unit tests, and should probably not be used outside
      * unit tests.
      */
-    fun isStructurallyEquivalent(other: StructurallyComparable): Boolean
+    infix fun isStructurallyEquivalent(other: StructurallyComparable): Boolean
 }

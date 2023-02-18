@@ -16,14 +16,14 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.IntLiteral
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstIntLiteral
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
 
 object IntParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): IntLiteral = parser with {
+    override fun parse(parser: JukkasParser, token: Token): AstIntLiteral = parser with {
+        // TODO: handle underscores, and handle potential overflow by parsing as BigInteger
         val value = token.text.toInt()
-        IntLiteral(value) withPosition token
+        AstIntLiteral(value, token.point)
     }
 }

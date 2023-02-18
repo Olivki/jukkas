@@ -16,37 +16,27 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.Block
-import net.ormr.jukkas.ir.LambdaDeclaration
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstAnonymousFunction
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.lexer.TokenType.*
 import net.ormr.jukkas.parser.JukkasParser
 import net.ormr.jukkas.parser.JukkasParser.Companion.IDENTIFIERS
-import net.ormr.jukkas.type.TypeName
 
 object AnonymousFunctionParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): LambdaDeclaration = parser with {
-        newBlock {
-            val name = consumeIfMatch(IDENTIFIERS, "identifier")
-            name?.syntaxError("Anonymous functions with names are prohibited")
-            consume(LEFT_PAREN)
-            val arguments = parseArguments(COMMA, RIGHT_PAREN, ::parseDefaultArgument)
-            val argEnd = consume(RIGHT_PAREN)
-            val returnType = parseOptionalTypeDeclaration(ARROW)
-            val returnTypePosition = (returnType as? TypeName)
-            val body = when {
-                match(EQUAL) -> {
-                    // TODO: give warning for structures like 'fun() = return;' ?
-                    val equal = previous()
-                    val expr = parseExpressionStatement()
-                    Block(newTable(), listOf(expr)) withPosition createSpan(equal, expr)
-                }
-                match(LEFT_BRACE) -> parseBlock(RIGHT_BRACE)
-                else -> createSpan(token, returnTypePosition ?: argEnd) syntaxError "Function must have a body"
-            }
-            LambdaDeclaration(arguments, body, returnType, table) withPosition createSpan(token, body)
+    override fun parse(parser: JukkasParser, token: Token): AstAnonymousFunction = parser with {
+        val name = consumeIfMatch(IDENTIFIERS, "identifier")
+        name?.syntaxError("Anonymous functions with names are prohibited")
+        consume(LEFT_PAREN)
+        val arguments = parseArguments(COMMA, RIGHT_PAREN, ::parseFunctionArgument)
+        val argEnd = consume(RIGHT_PAREN)
+        val returnType = parseOptionalTypeDeclaration(ARROW)
+        val returnTypePosition = returnType?.position
+        val body = when {
+            match(EQUAL) -> parseExpressionStatement().expression
+            match(LEFT_BRACE) -> parseBlock(RIGHT_BRACE)
+            else -> createSpan(token, returnTypePosition ?: argEnd) syntaxError "Function must have a body"
         }
+        AstAnonymousFunction(arguments, body, returnType, createSpan(token, body))
     }
 }

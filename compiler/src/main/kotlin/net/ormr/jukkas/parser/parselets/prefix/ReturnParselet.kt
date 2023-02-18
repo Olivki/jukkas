@@ -16,16 +16,16 @@
 
 package net.ormr.jukkas.parser.parselets.prefix
 
-import net.ormr.jukkas.ir.Return
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstReturn
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
 
 object ReturnParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): Return = parser with {
+    override fun parse(parser: JukkasParser, token: Token): AstReturn = parser with {
         // TODO: warn/error for structures like 'return return'
         val expr = parseExpressionOrNull()
-        Return(expr) withPosition (expr?.let { createSpan(token, it) } ?: token)
+        val position = expr?.let { createSpan(token, it) } ?: token.findPosition()
+        AstReturn(expr, position)
     }
 }

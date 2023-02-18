@@ -18,12 +18,10 @@ package net.ormr.jukkas.parser
 
 import io.kotest.core.spec.style.FunSpec
 import net.ormr.jukkas.arg
-import net.ormr.jukkas.ir.FunctionDeclaration
-import net.ormr.jukkas.ir.Table
+import net.ormr.jukkas.function
 import net.ormr.jukkas.parseStatement
 import net.ormr.jukkas.shouldBeStructurallyEquivalentTo
 import net.ormr.jukkas.shouldBeSuccess
-import net.ormr.jukkas.type.UnknownType
 import net.ormr.jukkas.typeName
 
 class FunctionParsingTest : FunSpec({
@@ -31,26 +29,24 @@ class FunctionParsingTest : FunSpec({
         context("Explicit return type") {
             test("fun foo() -> Unit") {
                 parseStatement("fun foo() -> Unit") shouldBeSuccess { stmt, _ ->
-                    stmt shouldBeStructurallyEquivalentTo FunctionDeclaration(
+                    stmt shouldBeStructurallyEquivalentTo function(
                         name = "foo",
                         arguments = emptyList(),
                         body = null,
-                        type = typeName("Unit"),
-                        table = Table(),
+                        returnType = typeName("Unit"),
                     )
                 }
             }
 
             test("fun foo(bar: Bar) -> Unit") {
                 parseStatement("fun foo(bar: Bar) -> Unit") shouldBeSuccess { stmt, _ ->
-                    stmt shouldBeStructurallyEquivalentTo FunctionDeclaration(
+                    stmt shouldBeStructurallyEquivalentTo function(
                         name = "foo",
                         arguments = listOf(
                             arg("bar", typeName("Bar")),
                         ),
                         body = null,
-                        type = typeName("Unit"),
-                        table = Table(),
+                        returnType = typeName("Unit"),
                     )
                 }
             }
@@ -59,26 +55,24 @@ class FunctionParsingTest : FunSpec({
         context("Implicit return type") {
             test("fun foo() -> Unit") {
                 parseStatement("fun foo()") shouldBeSuccess { stmt, _ ->
-                    stmt shouldBeStructurallyEquivalentTo FunctionDeclaration(
+                    stmt shouldBeStructurallyEquivalentTo function(
                         name = "foo",
                         arguments = emptyList(),
                         body = null,
-                        type = UnknownType,
-                        table = Table(),
+                        returnType = null,
                     )
                 }
             }
 
             test("fun foo(bar: Bar) -> Unit") {
                 parseStatement("fun foo(bar: Bar)") shouldBeSuccess { stmt, _ ->
-                    stmt shouldBeStructurallyEquivalentTo FunctionDeclaration(
+                    stmt shouldBeStructurallyEquivalentTo function(
                         name = "foo",
                         arguments = listOf(
                             arg("bar", typeName("Bar")),
                         ),
                         body = null,
-                        type = UnknownType,
-                        table = Table(),
+                        returnType = null,
                     )
                 }
             }

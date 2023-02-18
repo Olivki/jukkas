@@ -84,10 +84,11 @@ class Ast : CliktCommand(help = "Ast stuff", printHelpOnEmptyArgs = true) {
         val terminal = currentContext.terminal
         val unit = JukkasParser
             .parseFile(file)
-            .flatMap { TypeResolutionPhase.run(it.value) }
+        error("Not implemented at the moment")
+            /*.flatMap { TypeResolutionPhase.run(it.value) }
             .flatMap { TypeCheckingPhase.run(it.value) }
             .getOrElse { reporter.printErrors(terminal, it) }
-        terminal.println(json.encodeToString(toJson(unit)))
+        terminal.println(json.encodeToString(toJson(unit)))*/
     }
 
     private fun jsonPosition(position: Position): JsonObject = when (position) {

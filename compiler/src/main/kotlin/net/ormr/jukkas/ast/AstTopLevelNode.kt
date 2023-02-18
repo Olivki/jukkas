@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.lexer
+package net.ormr.jukkas.ast
 
-import net.ormr.jukkas.Point
-import net.ormr.jukkas.Positionable
-import net.ormr.jukkas.StructurallyComparable
-
-data class Token(
-    val type: TokenType,
-    val text: String,
-    val point: Point,
-) : Positionable, StructurallyComparable {
-    override fun toString(): String = "$point: $text (${type.image})"
-
-    override fun findPositionOrNull(): Point = point
-
-    override fun findPosition(): Point = point
-
-    override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
-        other is Token && type == other.type && text == other.text
-}
+sealed interface AstTopLevelNode : AstNode

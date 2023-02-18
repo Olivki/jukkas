@@ -16,9 +16,8 @@
 
 package net.ormr.jukkas.parser.parselets.infix
 
-import net.ormr.jukkas.ir.Expression
-import net.ormr.jukkas.ir.InfixInvocation
-import net.ormr.jukkas.ir.withPosition
+import net.ormr.jukkas.ast.AstExpression
+import net.ormr.jukkas.ast.AstInfixInvocation
 import net.ormr.jukkas.createSpan
 import net.ormr.jukkas.lexer.Token
 import net.ormr.jukkas.parser.JukkasParser
@@ -30,10 +29,10 @@ object InfixInvocationParselet : InfixParselet {
 
     override fun parse(
         parser: JukkasParser,
-        left: Expression,
+        left: AstExpression,
         token: Token,
-    ): InfixInvocation = parser with {
+    ): AstInfixInvocation = parser with {
         val right = parseExpression(precedence)
-        InfixInvocation(left, token.text, right) withPosition createSpan(left, right)
+        AstInfixInvocation(left, token, right, createSpan(left, right))
     }
 }
