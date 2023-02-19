@@ -74,6 +74,8 @@ style:
     active: false
   LoopWithTooManyJumpStatements:
     maxJumpCount: 3
+  UnusedPrivateMember: # TODO: maybe just lower severity to warning or something?
+    active: false
 
 formatting:
   active: true
