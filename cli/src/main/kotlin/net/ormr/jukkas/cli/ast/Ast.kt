@@ -36,17 +36,13 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
-import net.ormr.jukkas.Point
-import net.ormr.jukkas.Position
-import net.ormr.jukkas.Source
-import net.ormr.jukkas.Span
-import net.ormr.jukkas.ir.*
+import net.ormr.jukkas.*
+import net.ormr.jukkas.ast.*
 import net.ormr.jukkas.cli.CliErrorReporter
-import net.ormr.jukkas.flatMap
-import net.ormr.jukkas.getOrElse
 import net.ormr.jukkas.parser.JukkasParser
 import net.ormr.jukkas.phases.TypeCheckingPhase
 import net.ormr.jukkas.phases.TypeResolutionPhase
+import net.ormr.jukkas.type.JvmTypeResolver
 import net.ormr.jukkas.type.Type
 import net.ormr.jukkas.type.member.JukkasMember
 import net.ormr.jukkas.type.member.JvmMember
@@ -82,13 +78,17 @@ class Ast : CliktCommand(help = "Ast stuff", printHelpOnEmptyArgs = true) {
 
     override fun run() {
         val terminal = currentContext.terminal
+        val context = buildCompilationContext {
+            types {
+                resolver(JvmTypeResolver)
+            }
+        }
         val unit = JukkasParser
             .parseFile(file)
-        error("Not implemented at the moment")
-            /*.flatMap { TypeResolutionPhase.run(it.value) }
+            .flatMap { TypeResolutionPhase.run(it.value, context) }
             .flatMap { TypeCheckingPhase.run(it.value) }
             .getOrElse { reporter.printErrors(terminal, it) }
-        terminal.println(json.encodeToString(toJson(unit)))*/
+        terminal.println(json.encodeToString(toJson(unit)))
     }
 
     private fun jsonPosition(position: Position): JsonObject = when (position) {
