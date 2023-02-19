@@ -18,16 +18,16 @@ package net.ormr.jukkas.parser
 
 import io.kotest.core.spec.style.FunSpec
 import net.ormr.jukkas.ROOT_POINT
-import net.ormr.jukkas.frontend.ast.AstStringTemplate
+import net.ormr.jukkas.backend.ir.BinaryOperator.DIVISION
+import net.ormr.jukkas.backend.ir.BinaryOperator.MINUS
+import net.ormr.jukkas.backend.ir.BinaryOperator.MULTIPLICATION
+import net.ormr.jukkas.backend.ir.BinaryOperator.PLUS
 import net.ormr.jukkas.binary
 import net.ormr.jukkas.boolean
+import net.ormr.jukkas.frontend.ast.AstStringTemplate
 import net.ormr.jukkas.int
 import net.ormr.jukkas.invArg
 import net.ormr.jukkas.invocation
-import net.ormr.jukkas.ir.BinaryOperator.DIVISION
-import net.ormr.jukkas.ir.BinaryOperator.MINUS
-import net.ormr.jukkas.ir.BinaryOperator.MULTIPLICATION
-import net.ormr.jukkas.ir.BinaryOperator.PLUS
 import net.ormr.jukkas.memberAccess
 import net.ormr.jukkas.parseExpression
 import net.ormr.jukkas.reference

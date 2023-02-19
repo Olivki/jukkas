@@ -30,8 +30,8 @@ data class AstFunctionInvocation(
 ) : AstInvocation {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstFunctionInvocation &&
-                name isStructurallyEquivalent other.name &&
-                checkStructuralEquivalence(arguments, other.arguments)
+            name isStructurallyEquivalent other.name &&
+            checkStructuralEquivalence(arguments, other.arguments)
 }
 
 data class AstAnonymousFunctionInvocation(
@@ -41,8 +41,8 @@ data class AstAnonymousFunctionInvocation(
 ) : AstInvocation {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstAnonymousFunctionInvocation &&
-                left isStructurallyEquivalent other.left &&
-                checkStructuralEquivalence(arguments, other.arguments)
+            left isStructurallyEquivalent other.left &&
+            checkStructuralEquivalence(arguments, other.arguments)
 }
 
 data class AstInfixInvocation(
@@ -53,7 +53,7 @@ data class AstInfixInvocation(
 ) : AstInvocation {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstInfixInvocation &&
-                left isStructurallyEquivalent other.left &&
-                name isStructurallyEquivalent other.name &&
-                right isStructurallyEquivalent other.right
+            left isStructurallyEquivalent other.left &&
+            name isStructurallyEquivalent other.name &&
+            right isStructurallyEquivalent other.right
 }

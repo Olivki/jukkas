@@ -18,8 +18,8 @@ package net.ormr.jukkas.frontend.ast
 
 import net.ormr.jukkas.Position
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.ir.AssignmentOperator
-import net.ormr.jukkas.ir.BinaryOperator
+import net.ormr.jukkas.backend.ir.AssignmentOperator
+import net.ormr.jukkas.backend.ir.BinaryOperator
 import net.ormr.jukkas.frontend.lexer.Token
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
@@ -40,8 +40,8 @@ data class AstInvocationArgument(
 ) : AstExpression {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstInvocationArgument &&
-                checkStructuralEquivalence(name, other.name) &&
-                value isStructurallyEquivalent other.value
+            checkStructuralEquivalence(name, other.name) &&
+            value isStructurallyEquivalent other.value
 }
 
 data class AstConditionalBranch(
@@ -52,9 +52,9 @@ data class AstConditionalBranch(
 ) : AstExpression {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstConditionalBranch &&
-                condition isStructurallyEquivalent other.condition &&
-                thenBranch isStructurallyEquivalent other.thenBranch &&
-                checkStructuralEquivalence(elseBranch, other.elseBranch)
+            condition isStructurallyEquivalent other.condition &&
+            thenBranch isStructurallyEquivalent other.thenBranch &&
+            checkStructuralEquivalence(elseBranch, other.elseBranch)
 }
 
 data class AstParenthesizedExpression(
@@ -95,9 +95,9 @@ data class AstAssignmentOperation(
 ) : AstExpression {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstAssignmentOperation &&
-                left isStructurallyEquivalent other.left &&
-                operator == other.operator &&
-                value isStructurallyEquivalent other.value
+            left isStructurallyEquivalent other.left &&
+            operator == other.operator &&
+            value isStructurallyEquivalent other.value
 }
 
 data class AstBinaryOperation(
@@ -109,9 +109,9 @@ data class AstBinaryOperation(
 ) : AstExpression {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstBinaryOperation &&
-                left isStructurallyEquivalent other.left &&
-                operator == other.operator &&
-                right isStructurallyEquivalent other.right
+            left isStructurallyEquivalent other.left &&
+            operator == other.operator &&
+            right isStructurallyEquivalent other.right
 }
 
 data class AstMemberAccessOperation(
@@ -123,7 +123,7 @@ data class AstMemberAccessOperation(
 ) : AstExpression {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstMemberAccessOperation &&
-                left isStructurallyEquivalent other.left &&
-                isSafeAccess == other.isSafeAccess &&
-                right isStructurallyEquivalent other.right
+            left isStructurallyEquivalent other.left &&
+            isSafeAccess == other.isSafeAccess &&
+            right isStructurallyEquivalent other.right
 }

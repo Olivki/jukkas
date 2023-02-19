@@ -17,4 +17,3 @@
 package net.ormr.jukkas.backend.ir
 
 sealed class Statement : ChildNode()
-

@@ -37,8 +37,8 @@ data class AstCompilationUnit(
 ) : AstNode {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstCompilationUnit &&
-                checkStructuralEquivalence(imports, other.imports) &&
-                checkStructuralEquivalence(entries, other.entries)
+            checkStructuralEquivalence(imports, other.imports) &&
+            checkStructuralEquivalence(entries, other.entries)
 }
 
 data class AstImport(
@@ -48,15 +48,15 @@ data class AstImport(
 ) : AstNode, AstTopLevelNode {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstImport &&
-                path isStructurallyEquivalent other.path &&
-                checkStructuralEquivalence(entries, other.entries)
+            path isStructurallyEquivalent other.path &&
+            checkStructuralEquivalence(entries, other.entries)
 }
 
 data class AstImportEntry(val name: Token, val alias: Token?, override val position: Position) : AstNode {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstImportEntry &&
-                name isStructurallyEquivalent other.name &&
-                checkStructuralEquivalence(alias, other.alias)
+            name isStructurallyEquivalent other.name &&
+            checkStructuralEquivalence(alias, other.alias)
 }
 
 data class AstFunctionArgument(
@@ -67,9 +67,9 @@ data class AstFunctionArgument(
 ) : AstNode {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstFunctionArgument &&
-                name isStructurallyEquivalent other.name &&
-                type isStructurallyEquivalent other.type &&
-                checkStructuralEquivalence(default, other.default)
+            name isStructurallyEquivalent other.name &&
+            type isStructurallyEquivalent other.type &&
+            checkStructuralEquivalence(default, other.default)
 }
 
 sealed interface AstStringTemplatePart : AstNode {

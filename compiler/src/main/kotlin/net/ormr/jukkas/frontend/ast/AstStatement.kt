@@ -37,10 +37,10 @@ data class AstLocalVariable(
 ) : AstStatement {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstLocalVariable &&
-                kind isStructurallyEquivalent other.kind &&
-                name isStructurallyEquivalent other.name &&
-                checkStructuralEquivalence(type, other.type) &&
-                checkStructuralEquivalence(initializer, other.initializer)
+            kind isStructurallyEquivalent other.kind &&
+            name isStructurallyEquivalent other.name &&
+            checkStructuralEquivalence(type, other.type) &&
+            checkStructuralEquivalence(initializer, other.initializer)
 }
 
 data class AstProperty(
@@ -52,8 +52,8 @@ data class AstProperty(
 ) : AstStatement, AstTopLevelNode {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstProperty &&
-                kind isStructurallyEquivalent other.kind &&
-                name isStructurallyEquivalent other.name &&
-                checkStructuralEquivalence(type, other.type) &&
-                checkStructuralEquivalence(initializer, other.initializer)
+            kind isStructurallyEquivalent other.kind &&
+            name isStructurallyEquivalent other.name &&
+            checkStructuralEquivalence(type, other.type) &&
+            checkStructuralEquivalence(initializer, other.initializer)
 }

@@ -32,10 +32,10 @@ data class AstFunction(
 ) : AstExecutable, AstStatement, AstTopLevelNode {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstFunction &&
-                name isStructurallyEquivalent other.name &&
-                checkStructuralEquivalence(arguments, other.arguments) &&
-                checkStructuralEquivalence(body, other.body) &&
-                checkStructuralEquivalence(returnType, other.returnType)
+            name isStructurallyEquivalent other.name &&
+            checkStructuralEquivalence(arguments, other.arguments) &&
+            checkStructuralEquivalence(body, other.body) &&
+            checkStructuralEquivalence(returnType, other.returnType)
 }
 
 data class AstAnonymousFunction(
@@ -46,9 +46,9 @@ data class AstAnonymousFunction(
 ) : AstExecutable, AstExpression {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstAnonymousFunction &&
-                checkStructuralEquivalence(arguments, other.arguments) &&
-                checkStructuralEquivalence(body, other.body) &&
-                checkStructuralEquivalence(returnType, other.returnType)
+            checkStructuralEquivalence(arguments, other.arguments) &&
+            checkStructuralEquivalence(body, other.body) &&
+            checkStructuralEquivalence(returnType, other.returnType)
 }
 
 data class AstLambda(
@@ -58,6 +58,6 @@ data class AstLambda(
 ) : AstExecutable, AstExpression {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstLambda &&
-                checkStructuralEquivalence(arguments, other.arguments) &&
-                checkStructuralEquivalence(body, other.body)
+            checkStructuralEquivalence(arguments, other.arguments) &&
+            checkStructuralEquivalence(body, other.body)
 }
