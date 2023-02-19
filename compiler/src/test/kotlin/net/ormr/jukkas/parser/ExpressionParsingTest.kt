@@ -18,7 +18,7 @@ package net.ormr.jukkas.parser
 
 import io.kotest.core.spec.style.FunSpec
 import net.ormr.jukkas.ROOT_POINT
-import net.ormr.jukkas.ast.AstStringTemplate
+import net.ormr.jukkas.frontend.ast.AstStringTemplate
 import net.ormr.jukkas.binary
 import net.ormr.jukkas.boolean
 import net.ormr.jukkas.int
@@ -34,8 +34,8 @@ import net.ormr.jukkas.reference
 import net.ormr.jukkas.shouldBeStructurallyEquivalentTo
 import net.ormr.jukkas.shouldBeSuccess
 import net.ormr.jukkas.string
-import net.ormr.jukkas.ast.AstStringTemplatePart.Expression as ExpressionPart
-import net.ormr.jukkas.ast.AstStringTemplatePart.Literal as LiteralPart
+import net.ormr.jukkas.frontend.ast.AstStringTemplatePart.Expression as ExpressionPart
+import net.ormr.jukkas.frontend.ast.AstStringTemplatePart.Literal as LiteralPart
 
 class ExpressionParsingTest : FunSpec({
     test("'false' should parse to BooleanLiteral(false)") {

@@ -16,7 +16,7 @@
 
 package net.ormr.jukkas.utils
 
-import net.ormr.jukkas.lexer.TokenType
+import net.ormr.jukkas.frontend.lexer.TokenType
 
 // TODO: better name
 fun <T> Collection<T>.join(

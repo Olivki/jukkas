@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas
+package net.ormr.jukkas.frontend.parser.parselets.prefix
 
-import net.ormr.jukkas.frontend.ast.AstExpression
-import net.ormr.jukkas.frontend.ast.AstStatement
+import net.ormr.jukkas.frontend.ast.AstLambda
+import net.ormr.jukkas.frontend.lexer.Token
 import net.ormr.jukkas.frontend.parser.JukkasParser
-import net.ormr.jukkas.ir.Node
 
-inline fun <T : Node> parseNode(
-    source: String,
-    crossinline fn: (JukkasParser) -> T,
-): JukkasResult<T> = JukkasParser.parse(Source.Text(source), fn)
-
-fun parseStatement(source: String): JukkasResult<AstStatement> =
-    JukkasParser.parse(Source.Text(source), JukkasParser::parseStatement)
-
-fun parseExpression(source: String): JukkasResult<AstExpression> =
-    JukkasParser.parse(Source.Text(source), JukkasParser::parseExpression)
+object FunctionLiteralParselet : PrefixParselet {
+    override fun parse(parser: JukkasParser, token: Token): AstLambda = parser with {
+        // TODO: we're using || to separate arguments for now, remove this at a later point,
+        //       will require arbitrary lookahead tho
+        TODO("Implement FunctionLiteral parsing")
+    }
+}

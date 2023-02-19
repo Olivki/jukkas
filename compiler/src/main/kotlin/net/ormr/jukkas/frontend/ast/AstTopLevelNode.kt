@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.utils
+package net.ormr.jukkas.frontend.ast
 
-import net.ormr.jukkas.frontend.lexer.Token
-import net.ormr.jukkas.frontend.lexer.TokenType
-
-internal val Token.identifierName: String
-    get() = when (type) {
-        is TokenType.IdentifierLike -> when (type) {
-            TokenType.ESCAPED_IDENTIFIER -> text.drop(1)
-            is TokenType.SoftKeyword, TokenType.IDENTIFIER -> text
-        }
-        else -> throw IllegalArgumentException("Can't get identifierName for non identifier token type: $javaClass")
-    }
+sealed interface AstTopLevelNode : AstNode

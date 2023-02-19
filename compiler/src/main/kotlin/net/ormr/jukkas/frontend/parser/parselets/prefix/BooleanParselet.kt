@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas
+package net.ormr.jukkas.frontend.parser.parselets.prefix
 
-import net.ormr.jukkas.frontend.ast.AstExpression
-import net.ormr.jukkas.frontend.ast.AstStatement
+import net.ormr.jukkas.frontend.ast.AstBooleanLiteral
+import net.ormr.jukkas.frontend.lexer.Token
+import net.ormr.jukkas.frontend.lexer.TokenType
 import net.ormr.jukkas.frontend.parser.JukkasParser
-import net.ormr.jukkas.ir.Node
 
-inline fun <T : Node> parseNode(
-    source: String,
-    crossinline fn: (JukkasParser) -> T,
-): JukkasResult<T> = JukkasParser.parse(Source.Text(source), fn)
-
-fun parseStatement(source: String): JukkasResult<AstStatement> =
-    JukkasParser.parse(Source.Text(source), JukkasParser::parseStatement)
-
-fun parseExpression(source: String): JukkasResult<AstExpression> =
-    JukkasParser.parse(Source.Text(source), JukkasParser::parseExpression)
+object BooleanParselet : PrefixParselet {
+    override fun parse(parser: JukkasParser, token: Token): AstBooleanLiteral = parser with {
+        val value = when (token.type) {
+            TokenType.TRUE -> true
+            TokenType.FALSE -> false
+            else -> token syntaxError "Expected true or false"
+        }
+        AstBooleanLiteral(value, token.point)
+    }
+}

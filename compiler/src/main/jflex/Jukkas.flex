@@ -1,7 +1,10 @@
-package net.ormr.jukkas.lexer;
+package net.ormr.jukkas.frontend.lexer;
 
 import net.ormr.jukkas.*;
-import net.ormr.jukkas.lexer.TokenType.*;
+import net.ormr.jukkas.frontend.lexer.JukkasLexerException;
+import net.ormr.jukkas.frontend.lexer.Token;
+import net.ormr.jukkas.frontend.lexer.TokenType;
+import net.ormr.jukkas.frontend.lexer.TokenType.*;
 import java.util.*;
 
 %%
@@ -22,55 +25,55 @@ import java.util.*;
 
 %{
     private static final class State {
-        final int lBraceCount;
-        final int state;
+            final int lBraceCount;
+            final int state;
 
-        public State(int state, int lBraceCount) {
-            this.state = state;
-            this.lBraceCount = lBraceCount;
+            public State(int state, int lBraceCount) {
+                this.state = state;
+                this.lBraceCount = lBraceCount;
+            }
+
+            @Override
+            public String toString() {
+                return "yystate = " + state + (lBraceCount == 0 ? "" : "lBraceCount = " + lBraceCount);
+            }
         }
 
-        @Override
-        public String toString() {
-            return "yystate = " + state + (lBraceCount == 0 ? "" : "lBraceCount = " + lBraceCount);
+        private final Deque<State> states = new LinkedList<State>();
+        private int lBraceCount;
+
+        public Token advance() throws java.io.IOException, JukkasLexerException {
+            return token(yylex());
         }
-    }
 
-    private final Deque<State> states = new LinkedList<State>();
-    private int lBraceCount;
+        private void pushState(int state) {
+            states.push(new State(yystate(), lBraceCount));
+            lBraceCount = 0;
+            yybegin(state);
+        }
 
-    public Token advance() throws java.io.IOException, JukkasLexerException {
-        return token(yylex());
-    }
+        private void popState() {
+            State state = states.pop();
+            lBraceCount = state.lBraceCount;
+            yybegin(state.state);
+        }
 
-    private void pushState(int state) {
-        states.push(new State(yystate(), lBraceCount));
-        lBraceCount = 0;
-        yybegin(state);
-    }
+        private Token token(TokenType type) {
+            if (type == null) return null;
+            return new Token(type, yytext(), position());
+        }
 
-    private void popState() {
-        State state = states.pop();
-        lBraceCount = state.lBraceCount;
-        yybegin(state.state);
-    }
+        private Point position() {
+            return Point.of(yyline, yycolumn, zzStartRead, zzMarkedPos);
+        }
 
-    private Token token(TokenType type) {
-        if (type == null) return null;
-        return new Token(type, yytext(), position());
-    }
+        public void close() throws java.io.IOException {
+            yyclose();
+        }
 
-    private Point position() {
-        return Point.of(yyline, yycolumn, zzStartRead, zzMarkedPos);
-    }
-
-    public void close() throws java.io.IOException {
-        yyclose();
-    }
-
-    public boolean isAtEnd() {
-        return yyatEOF();
-    }
+        public boolean isAtEnd() {
+            return yyatEOF();
+        }
 %}
 
 Digit = [0-9]

@@ -16,24 +16,24 @@
 
 package net.ormr.jukkas
 
-import net.ormr.jukkas.ast.AstBasicTypeName
-import net.ormr.jukkas.ast.AstBinaryOperation
-import net.ormr.jukkas.ast.AstBooleanLiteral
-import net.ormr.jukkas.ast.AstExpression
-import net.ormr.jukkas.ast.AstFunction
-import net.ormr.jukkas.ast.AstFunctionArgument
-import net.ormr.jukkas.ast.AstFunctionInvocation
-import net.ormr.jukkas.ast.AstIdentifierReference
-import net.ormr.jukkas.ast.AstImport
-import net.ormr.jukkas.ast.AstImportEntry
-import net.ormr.jukkas.ast.AstIntLiteral
-import net.ormr.jukkas.ast.AstInvocationArgument
-import net.ormr.jukkas.ast.AstMemberAccessOperation
-import net.ormr.jukkas.ast.AstStringLiteral
-import net.ormr.jukkas.ast.AstTypeName
+import net.ormr.jukkas.frontend.ast.AstBasicTypeName
+import net.ormr.jukkas.frontend.ast.AstBinaryOperation
+import net.ormr.jukkas.frontend.ast.AstBooleanLiteral
+import net.ormr.jukkas.frontend.ast.AstExpression
+import net.ormr.jukkas.frontend.ast.AstFunction
+import net.ormr.jukkas.frontend.ast.AstFunctionArgument
+import net.ormr.jukkas.frontend.ast.AstFunctionInvocation
+import net.ormr.jukkas.frontend.ast.AstIdentifierReference
+import net.ormr.jukkas.frontend.ast.AstImport
+import net.ormr.jukkas.frontend.ast.AstImportEntry
+import net.ormr.jukkas.frontend.ast.AstIntLiteral
+import net.ormr.jukkas.frontend.ast.AstInvocationArgument
+import net.ormr.jukkas.frontend.ast.AstMemberAccessOperation
+import net.ormr.jukkas.frontend.ast.AstStringLiteral
+import net.ormr.jukkas.frontend.ast.AstTypeName
+import net.ormr.jukkas.frontend.lexer.Token
+import net.ormr.jukkas.frontend.lexer.TokenType
 import net.ormr.jukkas.ir.BinaryOperator
-import net.ormr.jukkas.lexer.Token
-import net.ormr.jukkas.lexer.TokenType
 
 fun boolean(value: Boolean) = AstBooleanLiteral(value, ROOT_POINT)
 

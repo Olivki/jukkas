@@ -19,7 +19,8 @@ package net.ormr.jukkas.parser
 import io.kotest.core.spec.style.FunSpec
 import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Source
-import net.ormr.jukkas.ast.AstImport
+import net.ormr.jukkas.frontend.ast.AstImport
+import net.ormr.jukkas.frontend.parser.JukkasParser
 import net.ormr.jukkas.import
 import net.ormr.jukkas.importEntry
 import net.ormr.jukkas.shouldBeStructurallyEquivalentTo

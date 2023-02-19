@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas
+package net.ormr.jukkas.frontend.parser.parselets.prefix
 
-import net.ormr.jukkas.frontend.ast.AstExpression
-import net.ormr.jukkas.frontend.ast.AstStatement
+import net.ormr.jukkas.createSpan
+import net.ormr.jukkas.frontend.ast.AstReturn
+import net.ormr.jukkas.frontend.lexer.Token
 import net.ormr.jukkas.frontend.parser.JukkasParser
-import net.ormr.jukkas.ir.Node
 
-inline fun <T : Node> parseNode(
-    source: String,
-    crossinline fn: (JukkasParser) -> T,
-): JukkasResult<T> = JukkasParser.parse(Source.Text(source), fn)
-
-fun parseStatement(source: String): JukkasResult<AstStatement> =
-    JukkasParser.parse(Source.Text(source), JukkasParser::parseStatement)
-
-fun parseExpression(source: String): JukkasResult<AstExpression> =
-    JukkasParser.parse(Source.Text(source), JukkasParser::parseExpression)
+object ReturnParselet : PrefixParselet {
+    override fun parse(parser: JukkasParser, token: Token): AstReturn = parser with {
+        // TODO: warn/error for structures like 'return return'
+        val expr = parseExpressionOrNull()
+        val position = expr?.let { createSpan(token, it) } ?: token.findPosition()
+        AstReturn(expr, position)
+    }
+}
