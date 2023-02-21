@@ -37,16 +37,16 @@ import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
 import net.ormr.jukkas.*
-import net.ormr.jukkas.ast.*
+import net.ormr.jukkas.backend.ir.*
+import net.ormr.jukkas.backend.phases.TypeCheckingPhase
+import net.ormr.jukkas.backend.phases.TypeResolutionPhase
 import net.ormr.jukkas.cli.CliErrorReporter
-import net.ormr.jukkas.parser.JukkasParser
-import net.ormr.jukkas.phases.TypeCheckingPhase
-import net.ormr.jukkas.phases.TypeResolutionPhase
-import net.ormr.jukkas.type.JvmTypeResolver
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.member.JukkasMember
-import net.ormr.jukkas.type.member.JvmMember
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.frontend.parser.JukkasParser
+import net.ormr.jukkas.oldtype.JvmTypeResolver
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.member.JukkasMember
+import net.ormr.jukkas.oldtype.member.JvmMember
+import net.ormr.jukkas.oldtype.member.TypeMember
 import net.ormr.krautils.reflection.isAbstract
 import net.ormr.krautils.reflection.isFinal
 import net.ormr.krautils.reflection.isInterface
@@ -152,7 +152,7 @@ class Ast : CliktCommand(help = "Ast stuff", printHelpOnEmptyArgs = true) {
         if (member.isStrict) add("strict")
     }
 
-    private fun toJson(type: Type): JsonElement = JsonPrimitive(type.internalName)
+    private fun toJson(type: OldType): JsonElement = JsonPrimitive(type.internalName)
 
     @JvmName("nullableToJson")
     private fun toJson(node: Node?): JsonElement = node?.let(::toJson) ?: JsonNull

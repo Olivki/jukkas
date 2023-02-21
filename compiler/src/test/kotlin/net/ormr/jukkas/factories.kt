@@ -16,24 +16,10 @@
 
 package net.ormr.jukkas
 
-import net.ormr.jukkas.frontend.ast.AstBasicTypeName
-import net.ormr.jukkas.frontend.ast.AstBinaryOperation
-import net.ormr.jukkas.frontend.ast.AstBooleanLiteral
-import net.ormr.jukkas.frontend.ast.AstExpression
-import net.ormr.jukkas.frontend.ast.AstFunction
-import net.ormr.jukkas.frontend.ast.AstFunctionArgument
-import net.ormr.jukkas.frontend.ast.AstFunctionInvocation
-import net.ormr.jukkas.frontend.ast.AstIdentifierReference
-import net.ormr.jukkas.frontend.ast.AstImport
-import net.ormr.jukkas.frontend.ast.AstImportEntry
-import net.ormr.jukkas.frontend.ast.AstIntLiteral
-import net.ormr.jukkas.frontend.ast.AstInvocationArgument
-import net.ormr.jukkas.frontend.ast.AstMemberAccessOperation
-import net.ormr.jukkas.frontend.ast.AstStringLiteral
-import net.ormr.jukkas.frontend.ast.AstTypeName
+import net.ormr.jukkas.backend.ir.BinaryOperator
+import net.ormr.jukkas.frontend.ast.*
 import net.ormr.jukkas.frontend.lexer.Token
 import net.ormr.jukkas.frontend.lexer.TokenType
-import net.ormr.jukkas.ir.BinaryOperator
 
 fun boolean(value: Boolean) = AstBooleanLiteral(value, ROOT_POINT)
 
@@ -43,7 +29,7 @@ fun string(value: String) = AstStringLiteral(value, ROOT_POINT)
 
 fun identifierToken(text: String) = Token(TokenType.IDENTIFIER, text, ROOT_POINT)
 
-fun reference(name: String) = AstIdentifierReference(identifierToken(name))
+fun reference(name: String) = AstIdentifierReference(identifierToken(name), ROOT_POINT)
 
 fun binary(
     left: AstExpression,
@@ -61,8 +47,8 @@ fun function(
     name: String,
     arguments: List<AstFunctionArgument>,
     body: AstExpression?,
-    returnType: AstTypeName?,
-) = AstFunction(identifierToken(name), arguments, body, returnType, ROOT_POINT)
+    returnType: AstTypeName,
+) = AstFunction(identifierToken(name), arguments, body, returnType, AstSymbolTable(), ROOT_POINT)
 
 fun import(
     path: String,
@@ -88,6 +74,8 @@ fun invocation(
     arguments: List<AstInvocationArgument>,
 ) = AstFunctionInvocation(identifierToken(name), arguments, ROOT_POINT)
 
-fun typeName(name: String) = AstBasicTypeName(identifierToken(name), ROOT_POINT)
+fun typeName(name: String) = AstBasicTypeName(identifierToken(name))
+
+fun undefinedTypeName() = AstUndefinedTypeName(ROOT_POINT)
 
 val ROOT_POINT = Point.of(0, 0, 0, 0)

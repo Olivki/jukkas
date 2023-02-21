@@ -17,35 +17,23 @@
 package net.ormr.jukkas.frontend.parser
 
 import net.ormr.jukkas.JukkasResult
+import net.ormr.jukkas.Positionable
 import net.ormr.jukkas.Source
 import net.ormr.jukkas.createSpan
-import net.ormr.jukkas.frontend.ast.AstBasicTypeName
-import net.ormr.jukkas.frontend.ast.AstBlock
-import net.ormr.jukkas.frontend.ast.AstCompilationUnit
-import net.ormr.jukkas.frontend.ast.AstExpression
-import net.ormr.jukkas.frontend.ast.AstExpressionStatement
-import net.ormr.jukkas.frontend.ast.AstFunction
-import net.ormr.jukkas.frontend.ast.AstFunctionArgument
-import net.ormr.jukkas.frontend.ast.AstImport
-import net.ormr.jukkas.frontend.ast.AstImportEntry
-import net.ormr.jukkas.frontend.ast.AstInvocationArgument
-import net.ormr.jukkas.frontend.ast.AstLocalVariable
-import net.ormr.jukkas.frontend.ast.AstProperty
-import net.ormr.jukkas.frontend.ast.AstStatement
-import net.ormr.jukkas.frontend.ast.AstStringLiteral
-import net.ormr.jukkas.frontend.ast.AstTopLevelNode
-import net.ormr.jukkas.frontend.ast.AstTypeName
+import net.ormr.jukkas.frontend.ast.*
 import net.ormr.jukkas.frontend.lexer.Token
 import net.ormr.jukkas.frontend.lexer.TokenStream
 import net.ormr.jukkas.frontend.lexer.TokenType
 import net.ormr.jukkas.frontend.lexer.TokenType.*
 import net.ormr.jukkas.frontend.parser.parselets.prefix.PrefixParselet
 import net.ormr.jukkas.frontend.parser.parselets.prefix.StringParselet
-import net.ormr.jukkas.ir.Expression
+import net.ormr.jukkas.utils.identifierName
 import java.nio.file.Path
 
 class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
-    fun parseCompilationUnit(): AstCompilationUnit {
+    private val scopes = ArrayDeque<AstSymbolTable>()
+
+    fun parseCompilationUnit(): AstCompilationUnit = scoped { table ->
         val imports = buildList {
             while (hasMore()) {
                 if (!check(IMPORT)) break
@@ -54,12 +42,12 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
         }
         val children = buildList {
             while (hasMore()) {
-                add(parseTopLevel() ?: continue)
+                add(table.tryDefine(parseTopLevel()) ?: continue)
             }
         }
         val end = consume(END_OF_FILE)
         val position = children.firstOrNull()?.let { createSpan(it, end) } ?: end.findPosition()
-        return AstCompilationUnit(source, imports, children, position)
+        AstCompilationUnit(source, imports, children, table, position)
     }
 
     fun consumeIdentifier(): Token = consume(IDENTIFIERS, "identifier")
@@ -148,7 +136,7 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
 
     private fun parseBasicTypeName(): AstBasicTypeName {
         val identifier = consumeIdentifier()
-        return AstBasicTypeName(identifier, identifier.findPosition())
+        return AstBasicTypeName(identifier)
     }
 
     fun parseTypeName(): AstTypeName = parseBasicTypeName()
@@ -158,19 +146,19 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
         return parseTypeName()
     }
 
-    fun parseOptionalTypeDeclaration(separator: TokenType = COLON): AstTypeName? = when {
+    fun parseOptionalTypeDeclaration(fallback: Positionable, separator: TokenType = COLON): AstTypeName = when {
         check(separator) -> parseTypeDeclaration(separator)
-        else -> null
+        else -> AstUndefinedTypeName(fallback.findPosition())
     }
 
-    private fun parseFunction(): AstFunction {
+    private fun parseFunction(): AstFunction = scoped { table ->
         val keyword = consume(FUN)
         val name = consumeIdentifier()
         consume(LEFT_PAREN)
-        val arguments = parseArguments(COMMA, RIGHT_PAREN, ::parseFunctionArgument)
+        val arguments = table.tryDefineAll(parseArguments(COMMA, RIGHT_PAREN, ::parseFunctionArgument))
         val argEnd = consume(RIGHT_PAREN)
-        val returnType = parseOptionalTypeDeclaration(ARROW)
-        val returnTypePosition = returnType?.position
+        val returnType = parseOptionalTypeDeclaration(argEnd, ARROW)
+        val returnTypePosition = returnType.position
         val body = when {
             match(EQUAL) -> parseExpressionStatement().expression
             match(LEFT_BRACE) -> parseBlock(RIGHT_BRACE)
@@ -178,8 +166,8 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
             //       and also verify that only class level functions are marked abstract and that stuff
             else -> null
         }
-        val position = createSpan(keyword, body ?: returnTypePosition ?: argEnd)
-        return AstFunction(name, arguments, body, returnType, position)
+        val position = createSpan(keyword, body ?: returnTypePosition)
+        AstFunction(name, arguments, body, returnType, table, position)
     }
 
     private fun parseProperty(): AstProperty = TODO()
@@ -235,19 +223,59 @@ class JukkasParser private constructor(tokens: TokenStream) : Parser(tokens) {
         else -> parseExpression()
     }
 
-    fun parseBlock(blockEnd: TokenType): AstBlock {
+    fun parseBlock(blockEnd: TokenType): AstBlock = scoped { table ->
         val start = previous()
         val children = buildList {
             while (!check(blockEnd) && hasMore()) {
-                val statement = withSynchronization({ check<BlockSynch>() }, { null }, ::parseStatement) ?: continue
-                add(statement)
+                val statement = withSynchronization({ check<BlockSynch>() }, { null }, ::parseStatement)
+                add(table.tryDefine(statement) ?: continue)
             }
         }
         val end = consume(blockEnd)
-        return AstBlock(children, createSpan(start, end))
+        AstBlock(children, table, createSpan(start, end))
     }
 
     inline infix fun <R> with(block: JukkasParser.() -> R): R = run(block)
+
+    inline infix fun <R> withTable(block: JukkasParser.(AstSymbolTable) -> R): R = scoped { run { block(it) } }
+
+    fun beginScope() {
+        scopes.addFirst(newTable())
+    }
+
+    fun endScope() {
+        scopes.removeFirst()
+    }
+
+    inline fun <R> scoped(block: (AstSymbolTable) -> R): R {
+        beginScope()
+        return try {
+            block(currentTable())
+        } finally {
+            endScope()
+        }
+    }
+
+    fun currentTable(): AstSymbolTable = scopes.firstOrNull() ?: error("No table found in the current scopes")
+
+    fun newTable(): AstSymbolTable = AstSymbolTable(scopes.firstOrNull())
+
+    fun <T : AstNode, I : Iterable<T>> AstSymbolTable.tryDefineAll(nodes: I): I {
+        for (node in nodes) tryDefine(node)
+        return nodes
+    }
+
+    fun <T> AstSymbolTable.tryDefine(node: T): T {
+        if (node is AstNamedDefinition) {
+            val name = node.name.identifierName
+            if (!hasLocal(name)) {
+                define(name, node)
+            } else {
+                node.reportSemanticError("Definition with name '$name' already exists")
+            }
+        }
+        return node
+    }
 
     companion object {
         internal val IDENTIFIERS = TokenType.setOf<IdentifierLike>()

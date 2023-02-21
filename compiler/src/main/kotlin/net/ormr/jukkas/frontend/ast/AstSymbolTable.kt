@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.frontend.ast
 
-interface TypeResolver {
-    fun resolve(path: String, symbol: String): Type?
-}
+import net.ormr.jukkas.AbstractSymbolTable
+
+// TODO: do we want to just use an read-only variant of a table for the AST?
+class AstSymbolTable(
+    override val parent: AstSymbolTable? = null,
+) : AbstractSymbolTable<AstSymbolTable, AstNamedDefinition>()

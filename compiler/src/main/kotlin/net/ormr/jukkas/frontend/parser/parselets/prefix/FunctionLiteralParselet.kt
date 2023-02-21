@@ -21,7 +21,7 @@ import net.ormr.jukkas.frontend.lexer.Token
 import net.ormr.jukkas.frontend.parser.JukkasParser
 
 object FunctionLiteralParselet : PrefixParselet {
-    override fun parse(parser: JukkasParser, token: Token): AstLambda = parser with {
+    override fun parse(parser: JukkasParser, token: Token): AstLambda = parser withTable { table ->
         // TODO: we're using || to separate arguments for now, remove this at a later point,
         //       will require arbitrary lookahead tho
         TODO("Implement FunctionLiteral parsing")

@@ -33,8 +33,9 @@ data class AstCompilationUnit(
     val source: Source,
     val imports: List<AstImport>,
     val entries: List<AstTopLevelNode>,
+    override val table: AstSymbolTable,
     override val position: Position,
-) : AstNode {
+) : AstNode, AstHasTable {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstCompilationUnit &&
             checkStructuralEquivalence(imports, other.imports) &&
@@ -60,11 +61,13 @@ data class AstImportEntry(val name: Token, val alias: Token?, override val posit
 }
 
 data class AstFunctionArgument(
-    val name: Token,
+    override val name: Token,
     val type: AstTypeName,
     val default: AstExpression?,
     override val position: Position,
-) : AstNode {
+) : AstNode, AstNamedDefinition {
+    override fun findTypeName(): AstTypeName = type
+
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstFunctionArgument &&
             name isStructurallyEquivalent other.name &&

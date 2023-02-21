@@ -19,15 +19,18 @@ package net.ormr.jukkas.frontend.ast
 import net.ormr.jukkas.Position
 import net.ormr.jukkas.StructurallyComparable
 import net.ormr.jukkas.frontend.lexer.Token
+import net.ormr.jukkas.type.member.TypeMember
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
-sealed interface AstInvocation : AstExpression
+sealed class AstInvocation : AstExpression()
 
 data class AstFunctionInvocation(
     val name: Token,
     val arguments: List<AstInvocationArgument>,
     override val position: Position,
-) : AstInvocation {
+) : AstInvocation() {
+    var member: TypeMember.Function? = null
+
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstFunctionInvocation &&
             name isStructurallyEquivalent other.name &&
@@ -38,7 +41,7 @@ data class AstAnonymousFunctionInvocation(
     val left: AstExpression,
     val arguments: List<AstInvocationArgument>,
     override val position: Position,
-) : AstInvocation {
+) : AstInvocation() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstAnonymousFunctionInvocation &&
             left isStructurallyEquivalent other.left &&
@@ -50,7 +53,7 @@ data class AstInfixInvocation(
     val name: Token,
     val right: AstExpression,
     override val position: Position,
-) : AstInvocation {
+) : AstInvocation() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstInfixInvocation &&
             left isStructurallyEquivalent other.left &&

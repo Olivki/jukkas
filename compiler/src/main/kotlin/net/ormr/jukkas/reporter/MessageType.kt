@@ -22,6 +22,7 @@ sealed interface MessageType {
     enum class Error : MessageType {
         SYNTAX,
         SEMANTIC,
+        INTERNAL,
         TYPE,
     }
 }

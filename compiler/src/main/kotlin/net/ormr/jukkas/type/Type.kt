@@ -16,12 +16,6 @@
 
 package net.ormr.jukkas.type
 
-import net.ormr.jukkas.StructurallyComparable
-
-sealed interface Type : StructurallyComparable {
-    val internalName: String
-
-    fun resolve(context: TypeResolutionContext): ResolvedTypeOrError
-
-    override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean = equals(other)
+sealed interface Type : TypeOrError {
+    fun isCompatible(other: Type): Boolean
 }

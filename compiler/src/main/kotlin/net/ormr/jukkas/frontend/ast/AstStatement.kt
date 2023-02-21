@@ -30,11 +30,13 @@ data class AstExpressionStatement(val expression: AstExpression, override val po
 
 data class AstLocalVariable(
     val kind: Token,
-    val name: Token,
-    val type: AstTypeName?,
+    override val name: Token,
+    val type: AstTypeName,
     val initializer: AstExpression?,
     override val position: Position,
-) : AstStatement {
+) : AstStatement, AstNamedDefinition {
+    override fun findTypeName(): AstTypeName = type
+
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstLocalVariable &&
             kind isStructurallyEquivalent other.kind &&
@@ -45,11 +47,13 @@ data class AstLocalVariable(
 
 data class AstProperty(
     val kind: Token,
-    val name: Token,
-    val type: AstTypeName?,
+    override val name: Token,
+    val type: AstTypeName,
     val initializer: AstExpression?,
     override val position: Position,
-) : AstStatement, AstTopLevelNode {
+) : AstStatement, AstTopLevelNode, AstNamedDefinition {
+    override fun findTypeName(): AstTypeName = type
+
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstProperty &&
             kind isStructurallyEquivalent other.kind &&

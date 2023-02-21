@@ -27,9 +27,9 @@ import net.ormr.asmkt.types.ReferenceType
 import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Source
 import net.ormr.jukkas.backend.ir.*
-import net.ormr.jukkas.type.AsmReferenceType
-import net.ormr.jukkas.type.JvmType
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.AsmReferenceType
+import net.ormr.jukkas.oldtype.JvmType
+import net.ormr.jukkas.oldtype.member.TypeMember
 import net.ormr.krautils.lang.ifNotNull
 import kotlin.io.path.name
 import kotlin.io.path.pathString

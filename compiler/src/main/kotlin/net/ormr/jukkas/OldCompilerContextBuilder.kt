@@ -1,13 +1,13 @@
 package net.ormr.jukkas
 
-import net.ormr.jukkas.type.TypeResolver
+import net.ormr.jukkas.oldtype.TypeResolver
 
 @DslMarker
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class CompilerContextBuilderDsl
 
 @CompilerContextBuilderDsl
-class CompilerContextBuilder {
+class OldCompilerContextBuilder {
     var resolverBuilder: TypeResolverBuilder? = null
 
     @CompilerContextBuilderDsl
@@ -26,16 +26,16 @@ class CompilerContextBuilder {
         this.resolverBuilder = resolverBuilder
     }
 
-    fun build(): CompilerContext {
+    fun build(): OldCompilerContext {
         require(resolverBuilder != null) { "'types' should be declared" }
-        return CompilerContext(
+        return OldCompilerContext(
             resolverBuilder!!.typeResolvers
         )
     }
 }
 
-fun buildCompilationContext(builder: CompilerContextBuilder.() -> Unit): CompilerContext {
-    val compilerContextBuilder = CompilerContextBuilder()
+fun buildCompilationContext(builder: OldCompilerContextBuilder.() -> Unit): OldCompilerContext {
+    val compilerContextBuilder = OldCompilerContextBuilder()
     builder.invoke(compilerContextBuilder)
     return compilerContextBuilder.build()
 }

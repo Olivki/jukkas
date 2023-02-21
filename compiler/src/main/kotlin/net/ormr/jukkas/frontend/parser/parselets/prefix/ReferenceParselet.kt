@@ -34,7 +34,7 @@ object ReferenceParselet : PrefixParselet {
                 val end = consume(RIGHT_PAREN)
                 AstFunctionInvocation(token, arguments, createSpan(token, end))
             }
-            else -> AstIdentifierReference(token)
+            else -> AstIdentifierReference(token, token.point)
         }
     }
 }

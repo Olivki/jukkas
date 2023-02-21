@@ -16,6 +16,20 @@
 
 package net.ormr.jukkas.type
 
-interface TypeResolver {
-    fun resolve(path: String, symbol: String): Type?
+import net.ormr.jukkas.type.member.TypeMember
+
+// TODO: better name
+interface ContainerType : Type {
+    val name: String
+    val simpleName: String
+
+    val isObject: Boolean
+
+    fun isSuperType(other: Type): Boolean
+
+    fun isSubType(other: Type): Boolean
+
+    fun findProperty(name: String): TypeMember.Property?
+
+    fun findFunction(name: String, typeParameters: List<TypeOrError>): TypeMember.Function?
 }

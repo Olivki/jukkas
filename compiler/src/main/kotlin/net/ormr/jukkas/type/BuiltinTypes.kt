@@ -16,6 +16,17 @@
 
 package net.ormr.jukkas.type
 
-interface TypeResolver {
-    fun resolve(path: String, symbol: String): Type?
+interface BuiltinTypes {
+    val any: Type
+    val nothing: Type
+    val unit: Type
+    val string: Type
+    val boolean: Type
+    val char: Type
+    val int8: Type
+    val int16: Type
+    val int32: Type
+    val int64: Type
+    val float32: Type
+    val float64: Type
 }

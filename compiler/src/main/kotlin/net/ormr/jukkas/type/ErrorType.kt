@@ -16,4 +16,6 @@
 
 package net.ormr.jukkas.type
 
-data class ErrorType(val description: String) : TypeOrError
+data class ErrorType(val description: String) : TypeOrError {
+    override fun asString(): String = "<ERROR: \"$description\">"
+}

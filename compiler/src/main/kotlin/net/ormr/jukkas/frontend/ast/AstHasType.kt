@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.frontend.ast
 
-interface TypeResolver {
-    fun resolve(path: String, symbol: String): Type?
-}
+sealed interface AstHasType : AstNode

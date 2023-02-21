@@ -19,29 +19,29 @@ package net.ormr.jukkas.frontend.ast
 import net.ormr.jukkas.Position
 import net.ormr.jukkas.StructurallyComparable
 
-sealed interface AstLiteralExpression : AstExpression
+sealed class AstLiteralExpression : AstExpression()
 
-data class AstBooleanLiteral(val value: Boolean, override val position: Position) : AstLiteralExpression {
+data class AstBooleanLiteral(val value: Boolean, override val position: Position) : AstLiteralExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstBooleanLiteral && value == other.value
 }
 
-data class AstCharLiteral(val value: Char, override val position: Position) : AstLiteralExpression {
+data class AstCharLiteral(val value: Char, override val position: Position) : AstLiteralExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstCharLiteral && value == other.value
 }
 
-data class AstStringLiteral(val value: String, override val position: Position) : AstLiteralExpression {
+data class AstStringLiteral(val value: String, override val position: Position) : AstLiteralExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstStringLiteral && value == other.value
 }
 
-data class AstIntLiteral(val value: Int, override val position: Position) : AstLiteralExpression {
+data class AstIntLiteral(val value: Int, override val position: Position) : AstLiteralExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstIntLiteral && value == other.value
 }
 
-data class AstFloatLiteral(val value: Float, override val position: Position) : AstLiteralExpression {
+data class AstFloatLiteral(val value: Float, override val position: Position) : AstLiteralExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstFloatLiteral && value == other.value
 }

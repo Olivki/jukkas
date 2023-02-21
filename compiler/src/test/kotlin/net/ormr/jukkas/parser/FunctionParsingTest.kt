@@ -23,6 +23,7 @@ import net.ormr.jukkas.parseStatement
 import net.ormr.jukkas.shouldBeStructurallyEquivalentTo
 import net.ormr.jukkas.shouldBeSuccess
 import net.ormr.jukkas.typeName
+import net.ormr.jukkas.undefinedTypeName
 
 class FunctionParsingTest : FunSpec({
     context("No body functions") {
@@ -59,7 +60,7 @@ class FunctionParsingTest : FunSpec({
                         name = "foo",
                         arguments = emptyList(),
                         body = null,
-                        returnType = null,
+                        returnType = undefinedTypeName(),
                     )
                 }
             }
@@ -72,7 +73,7 @@ class FunctionParsingTest : FunSpec({
                             arg("bar", typeName("Bar")),
                         ),
                         body = null,
-                        returnType = null,
+                        returnType = undefinedTypeName(),
                     )
                 }
             }

@@ -16,6 +16,10 @@
 
 package net.ormr.jukkas.type
 
-interface TypeResolver {
-    fun resolve(path: String, symbol: String): Type?
+class IntersectionType(val left: Type, val right: Type) : Type {
+    override fun isCompatible(other: Type): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun asString(): String = "${left.asString()} & ${right.asString()}"
 }

@@ -159,6 +159,10 @@ abstract class Parser(private val tokens: TokenStream) : Closeable {
 
     infix fun Positionable.syntaxError(message: String): Nothing = error(MessageType.Error.SYNTAX, this, message)
 
+    fun Positionable.reportSemanticError(message: String) {
+        reporter.reportError(source, MessageType.Error.SEMANTIC, this, message)
+    }
+
     fun error(
         type: MessageType.Error,
         position: Positionable,

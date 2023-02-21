@@ -21,14 +21,19 @@ import net.ormr.jukkas.StructurallyComparable
 import net.ormr.jukkas.backend.ir.AssignmentOperator
 import net.ormr.jukkas.backend.ir.BinaryOperator
 import net.ormr.jukkas.frontend.lexer.Token
+import net.ormr.jukkas.type.TypeOrError
+import net.ormr.jukkas.type.member.TypeMember
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
-sealed interface AstExpression : AstStatement
+sealed class AstExpression : AstStatement, AstHasType {
+    var resolvedType: TypeOrError? = null
+}
 
 data class AstBlock(
     val children: List<AstStatement>,
+    override val table: AstSymbolTable,
     override val position: Position,
-) : AstExpression {
+) : AstExpression(), AstHasTable {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstBlock && checkStructuralEquivalence(children, other.children)
 }
@@ -37,7 +42,7 @@ data class AstInvocationArgument(
     val name: Token?,
     val value: AstExpression,
     override val position: Position,
-) : AstExpression {
+) : AstExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstInvocationArgument &&
             checkStructuralEquivalence(name, other.name) &&
@@ -49,7 +54,7 @@ data class AstConditionalBranch(
     val thenBranch: AstExpression,
     val elseBranch: AstExpression?,
     override val position: Position,
-) : AstExpression {
+) : AstExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstConditionalBranch &&
             condition isStructurallyEquivalent other.condition &&
@@ -60,20 +65,20 @@ data class AstConditionalBranch(
 data class AstParenthesizedExpression(
     val expression: AstExpression,
     override val position: Position,
-) : AstExpression {
+) : AstExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstParenthesizedExpression && expression isStructurallyEquivalent other.expression
 }
 
-data class AstIdentifierReference(val name: Token) : AstExpression {
-    override val position: Position
-        get() = name.point
+data class AstIdentifierReference(val name: Token, override val position: Position) : AstExpression() {
+    var member: TypeMember.Property? = null
+    var kind: AstReferenceKind? = null
 
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstIdentifierReference && name isStructurallyEquivalent other.name
 }
 
-data class AstReturn(val value: AstExpression?, override val position: Position) : AstExpression {
+data class AstReturn(val value: AstExpression?, override val position: Position) : AstExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstReturn && checkStructuralEquivalence(value, other.value)
 }
@@ -81,7 +86,7 @@ data class AstReturn(val value: AstExpression?, override val position: Position)
 data class AstStringTemplate(
     val parts: List<AstStringTemplatePart>,
     override val position: Position,
-) : AstExpression {
+) : AstExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstStringTemplate && checkStructuralEquivalence(parts, other.parts)
 }
@@ -92,7 +97,7 @@ data class AstAssignmentOperation(
     val operatorToken: Token,
     val value: AstExpression,
     override val position: Position,
-) : AstExpression {
+) : AstExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstAssignmentOperation &&
             left isStructurallyEquivalent other.left &&
@@ -106,7 +111,7 @@ data class AstBinaryOperation(
     val operatorToken: Token,
     val right: AstExpression,
     override val position: Position,
-) : AstExpression {
+) : AstExpression() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstBinaryOperation &&
             left isStructurallyEquivalent other.left &&
@@ -120,7 +125,9 @@ data class AstMemberAccessOperation(
     val operatorToken: Token,
     val right: AstExpression,
     override val position: Position,
-) : AstExpression {
+) : AstExpression() {
+    var member: TypeMember? = null
+
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstMemberAccessOperation &&
             left isStructurallyEquivalent other.left &&

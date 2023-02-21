@@ -21,15 +21,20 @@ import net.ormr.jukkas.StructurallyComparable
 import net.ormr.jukkas.frontend.lexer.Token
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
-sealed interface AstExecutable : AstNode
+sealed interface AstExecutable : AstNode, AstHasTable, AstDefinition {
+    val returnType: AstTypeName
+
+    override fun findTypeName(): AstTypeName = returnType
+}
 
 data class AstFunction(
-    val name: Token,
+    override val name: Token,
     val arguments: List<AstFunctionArgument>,
     val body: AstExpression?,
-    val returnType: AstTypeName?,
+    override val returnType: AstTypeName,
+    override val table: AstSymbolTable,
     override val position: Position,
-) : AstExecutable, AstStatement, AstTopLevelNode {
+) : AstExecutable, AstStatement, AstTopLevelNode, AstNamedDefinition {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstFunction &&
             name isStructurallyEquivalent other.name &&
@@ -41,9 +46,11 @@ data class AstFunction(
 data class AstAnonymousFunction(
     val arguments: List<AstFunctionArgument>,
     val body: AstExpression,
-    val returnType: AstTypeName?,
+    override val returnType: AstTypeName,
+    override val table: AstSymbolTable,
     override val position: Position,
-) : AstExecutable, AstExpression {
+) : AstExecutable, AstExpression, AstDefinition {
+
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstAnonymousFunction &&
             checkStructuralEquivalence(arguments, other.arguments) &&
@@ -54,8 +61,12 @@ data class AstAnonymousFunction(
 data class AstLambda(
     val arguments: List<AstFunctionArgument>,
     val body: AstExpression,
+    override val table: AstSymbolTable,
     override val position: Position,
-) : AstExecutable, AstExpression {
+) : AstExecutable, AstExpression, AstDefinition {
+    // TODO: better position
+    override val returnType: AstTypeName = AstUndefinedTypeName(body.findPosition())
+
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstLambda &&
             checkStructuralEquivalence(arguments, other.arguments) &&

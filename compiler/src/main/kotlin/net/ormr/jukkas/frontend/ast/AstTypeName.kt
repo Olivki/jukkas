@@ -19,14 +19,53 @@ package net.ormr.jukkas.frontend.ast
 import net.ormr.jukkas.Position
 import net.ormr.jukkas.StructurallyComparable
 import net.ormr.jukkas.frontend.lexer.Token
+import net.ormr.jukkas.type.TypeOrError
 
-sealed interface AstTypeName : AstNode {
-    fun asString(): String
+sealed class AstTypeName : AstNode {
+    var resolvedType: TypeOrError? = null
+
+    abstract fun asString(): String
 }
 
-data class AstBasicTypeName(val name: Token, override val position: Position) : AstTypeName {
+data class AstUndefinedTypeName(override val position: Position) : AstTypeName() {
+    override fun asString(): String = "<undefined>"
+
+    override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean = other is AstUndefinedTypeName
+}
+
+sealed class AstExistingTypeName : AstTypeName()
+
+data class AstBasicTypeName(val name: Token) : AstExistingTypeName() {
+    override val position: Position
+        get() = name.point
+
     override fun asString(): String = name.text
 
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AstBasicTypeName && name isStructurallyEquivalent other.name
+}
+
+data class AstUnionTypeName(
+    val left: AstExistingTypeName,
+    val right: AstExistingTypeName,
+    override val position: Position,
+) : AstExistingTypeName() {
+    override fun asString(): String = "${left.asString()} | ${right.asString()}"
+
+    override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
+        other is AstUnionTypeName && left isStructurallyEquivalent other.left &&
+            right isStructurallyEquivalent other.right
+}
+
+data class AstIntersectionTypeName(
+    val left: AstExistingTypeName,
+    val right: AstExistingTypeName,
+    override val position: Position,
+) : AstExistingTypeName() {
+    override fun asString(): String = "${left.asString()} & ${right.asString()}"
+
+    override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
+        other is AstIntersectionTypeName &&
+            left isStructurallyEquivalent other.left &&
+            right isStructurallyEquivalent other.right
 }

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.utils
 
-interface TypeResolver {
-    fun resolve(path: String, symbol: String): Type?
-}
+internal inline fun <reified T : Any> unreachable(): Nothing =
+    error("Branch for <${T::class}> should never be reached")

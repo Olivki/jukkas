@@ -21,7 +21,7 @@ import net.ormr.jukkas.Source
 import net.ormr.jukkas.backend.ir.Node
 import net.ormr.jukkas.reporter.MessageReporter
 import net.ormr.jukkas.reporter.MessageType
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 
 sealed class CompilerPhase(private val source: Source) {
     protected val reporter: MessageReporter = MessageReporter()
@@ -39,7 +39,7 @@ sealed class CompilerPhase(private val source: Source) {
         reporter.reportError(source, MessageType.Error.TYPE, position, message)
     }
 
-    protected fun formatIncompatibleTypes(expected: Type, got: Type): String =
+    protected fun formatIncompatibleTypes(expected: OldType, got: OldType): String =
         "Expected type <${expected.internalName}> got <${got.internalName}>"
 
     protected inline fun <reified T : Any> unreachable(): Nothing =
