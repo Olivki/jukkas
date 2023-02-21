@@ -17,8 +17,8 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.UnknownType
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.UnknownType
 
 // assignments are *not* expressions
 class AssignmentOperation(
@@ -28,7 +28,7 @@ class AssignmentOperation(
 ) : Expression(), HasMutableType {
     var left: Expression by child(left)
     var value: Expression by child(value)
-    override var type: Type = UnknownType
+    override var type: OldType = UnknownType
 
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is AssignmentOperation &&
@@ -45,7 +45,7 @@ class AssignmentOperation(
 
     operator fun component3(): Expression = value
 
-    operator fun component4(): Type = type
+    operator fun component4(): OldType = type
 }
 
 enum class AssignmentOperator(override val symbol: String) : Operator {

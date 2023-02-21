@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
-typealias AsmType = net.ormr.asmkt.types.Type
-typealias AsmArrayType = net.ormr.asmkt.types.ArrayType
-typealias AsmFieldType = net.ormr.asmkt.types.FieldType
-typealias AsmMethodType = net.ormr.asmkt.types.MethodType
-typealias AsmPrimitiveType = net.ormr.asmkt.types.PrimitiveType
-typealias AsmReferenceType = net.ormr.asmkt.types.ReferenceType
+import net.ormr.jukkas.Positionable
+
+interface TypeResolutionContext {
+    val cache: TypeCache
+
+    fun reportSemanticError(position: Positionable, message: String)
+
+    fun reportTypeError(position: Positionable, message: String)
+}
+
+fun TypeResolutionContext.errorType(position: Positionable, message: String): ErrorType {
+    reportSemanticError(position, message)
+    return ErrorType(message)
+}

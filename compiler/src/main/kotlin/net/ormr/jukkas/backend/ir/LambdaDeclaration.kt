@@ -17,13 +17,13 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
 class LambdaDeclaration(
     arguments: List<Argument>,
     body: Block,
-    override var type: Type,
+    override var type: OldType,
     override val table: Table,
 ) : Expression(), Invokable<Argument>, TableContainer {
     override val arguments: MutableNodeList<Argument> =

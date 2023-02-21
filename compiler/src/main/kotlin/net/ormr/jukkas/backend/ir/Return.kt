@@ -17,13 +17,13 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.UnknownType
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.UnknownType
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
 class Return(value: Expression?) : Expression(), HasMutableType {
     var value: Expression? by child(value)
-    override var type: Type = UnknownType
+    override var type: OldType = UnknownType
 
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is Return &&
@@ -37,5 +37,5 @@ class Return(value: Expression?) : Expression(), HasMutableType {
 
     operator fun component1(): Expression? = value
 
-    operator fun component2(): Type = type
+    operator fun component2(): OldType = type
 }

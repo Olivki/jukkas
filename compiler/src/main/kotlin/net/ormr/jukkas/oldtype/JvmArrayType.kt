@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
-import net.ormr.jukkas.type.member.JvmMember
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.member.JvmMember
+import net.ormr.jukkas.oldtype.member.TypeMember
 import net.ormr.jukkas.utils.getDescriptor
 
 class JvmArrayType private constructor(val clz: Class<*>) : JvmType {

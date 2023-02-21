@@ -1,4 +1,4 @@
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
 object JvmTypeResolver : TypeResolver {
     override fun resolve(path: String, symbol: String): ResolvedType? {

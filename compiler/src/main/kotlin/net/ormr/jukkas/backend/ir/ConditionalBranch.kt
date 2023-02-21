@@ -17,8 +17,8 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.UnknownType
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.UnknownType
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
 class ConditionalBranch(
@@ -29,7 +29,7 @@ class ConditionalBranch(
     var condition: Expression by child(condition)
     var thenBranch: Expression by child(thenBranch)
     var elseBranch: Expression? by child(elseBranch)
-    override var type: Type = UnknownType
+    override var type: OldType = UnknownType
 
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is ConditionalBranch &&
@@ -44,5 +44,5 @@ class ConditionalBranch(
 
     operator fun component3(): Expression? = elseBranch
 
-    operator fun component4(): Type = type
+    operator fun component4(): OldType = type
 }

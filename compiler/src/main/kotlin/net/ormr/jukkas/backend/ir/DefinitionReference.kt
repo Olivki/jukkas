@@ -17,12 +17,12 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.UnknownType
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.UnknownType
+import net.ormr.jukkas.oldtype.member.TypeMember
 
 class DefinitionReference(val name: String) : Expression(), HasMutableType {
-    override var type: Type = UnknownType
+    override var type: OldType = UnknownType
 
     // TODO: support references to property members too
     var member: TypeMember.Field? = null
@@ -45,5 +45,5 @@ class DefinitionReference(val name: String) : Expression(), HasMutableType {
 
     operator fun component1(): String = name
 
-    operator fun component2(): Type = type
+    operator fun component2(): OldType = type
 }

@@ -17,13 +17,13 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
 class LocalVariable(
     override val kind: PropertyKind,
     override val name: String,
-    override var type: Type,
+    override var type: OldType,
     initializer: Expression?,
 ) : Statement(), Variable {
     override var initializer: Expression? by child(initializer)
@@ -40,7 +40,7 @@ class LocalVariable(
 
     operator fun component2(): String = name
 
-    operator fun component3(): Type = type
+    operator fun component3(): OldType = type
 
     operator fun component4(): Expression? = initializer
 }

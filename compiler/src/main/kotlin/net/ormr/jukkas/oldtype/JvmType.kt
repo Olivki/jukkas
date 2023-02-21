@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
-import net.ormr.jukkas.type.member.JvmMember
+import net.ormr.jukkas.oldtype.member.JvmMember
 
 sealed interface JvmType : ResolvedType {
     override val superType: ResolvedType?
@@ -26,7 +26,7 @@ sealed interface JvmType : ResolvedType {
     val jvmName: String
         get() = internalName.replace('.', '$').replace('/', '.')
 
-    infix fun jvmDescriptorMatches(other: Type): Boolean =
+    infix fun jvmDescriptorMatches(other: OldType): Boolean =
         other is JvmType && toJvmDescriptor() == other.toJvmDescriptor()
 
     fun toAsmType(): AsmFieldType = AsmReferenceType.fromDescriptor(toJvmDescriptor())

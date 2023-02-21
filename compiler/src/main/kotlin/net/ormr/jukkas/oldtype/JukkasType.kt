@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
-import net.ormr.jukkas.type.member.JukkasMember
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.member.JukkasMember
+import net.ormr.jukkas.oldtype.member.TypeMember
 
 class JukkasType private constructor(override val internalName: String) : ResolvedType {
     override val superType: ResolvedType?

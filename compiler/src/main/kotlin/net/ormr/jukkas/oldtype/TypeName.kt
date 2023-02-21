@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
 import net.ormr.jukkas.Position
 import net.ormr.jukkas.Positionable
 import net.ormr.jukkas.StructurallyComparable
 
-class TypeName(val position: Position, override val internalName: String) : Positionable, Type {
+class TypeName(val position: Position, override val internalName: String) : Positionable, OldType {
     override fun findPositionOrNull(): Position = position
 
     // TODO: handle jukkas classes

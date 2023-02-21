@@ -17,14 +17,14 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
 class FunctionDeclaration(
     override val name: String,
     arguments: List<NamedArgument>,
     body: Block?,
-    override var type: Type,
+    override var type: OldType,
     override val table: Table,
 ) : Statement(), Invokable<NamedArgument>, NamedDefinition, TableContainer, TopLevel {
     override val arguments: MutableNodeList<NamedArgument> =

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
-object UnknownType : Type {
-    override val internalName: String
-        get() = "UnknownType"
-
-    override fun resolve(context: TypeResolutionContext): Nothing = error("Can't resolve an UnknownType")
-
-    override fun toString(): String = "UnknownType"
-}
+typealias AsmType = net.ormr.asmkt.types.Type
+typealias AsmArrayType = net.ormr.asmkt.types.ArrayType
+typealias AsmFieldType = net.ormr.asmkt.types.FieldType
+typealias AsmMethodType = net.ormr.asmkt.types.MethodType
+typealias AsmPrimitiveType = net.ormr.asmkt.types.PrimitiveType
+typealias AsmReferenceType = net.ormr.asmkt.types.ReferenceType

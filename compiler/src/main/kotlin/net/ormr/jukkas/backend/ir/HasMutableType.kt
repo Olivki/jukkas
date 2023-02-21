@@ -16,8 +16,8 @@
 
 package net.ormr.jukkas.backend.ir
 
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 
 sealed interface HasMutableType : HasType {
-    override var type: Type
+    override var type: OldType
 }

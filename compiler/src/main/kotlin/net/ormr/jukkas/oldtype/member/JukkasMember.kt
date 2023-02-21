@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype.member
 
-import net.ormr.jukkas.Positionable
-
-interface TypeResolutionContext {
-    val cache: TypeCache
-
-    fun reportSemanticError(position: Positionable, message: String)
-
-    fun reportTypeError(position: Positionable, message: String)
-}
-
-fun TypeResolutionContext.errorType(position: Positionable, message: String): ErrorType {
-    reportSemanticError(position, message)
-    return ErrorType(message)
-}
+sealed interface JukkasMember : TypeMember

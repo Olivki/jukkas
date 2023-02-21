@@ -17,13 +17,13 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.UnknownType
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.UnknownType
+import net.ormr.jukkas.oldtype.member.TypeMember
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
 sealed class Invocation : Expression(), HasMutableType {
-    override var type: Type = UnknownType
+    override var type: OldType = UnknownType
 }
 
 class InfixInvocation(

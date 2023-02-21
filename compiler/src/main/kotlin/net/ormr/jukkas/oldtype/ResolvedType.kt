@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.member.TypeMember
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 

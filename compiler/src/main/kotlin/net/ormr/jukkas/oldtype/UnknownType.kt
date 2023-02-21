@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.backend.ir
+package net.ormr.jukkas.oldtype
 
-import net.ormr.jukkas.oldtype.OldType
+object UnknownType : OldType {
+    override val internalName: String
+        get() = "UnknownType"
 
-sealed interface Definition : Node, HasType {
-    override val type: OldType
+    override fun resolve(context: TypeResolutionContext): Nothing = error("Can't resolve an UnknownType")
+
+    override fun toString(): String = "UnknownType"
 }

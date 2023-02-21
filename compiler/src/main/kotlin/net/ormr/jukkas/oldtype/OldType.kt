@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type.member
+package net.ormr.jukkas.oldtype
 
-sealed interface JukkasMember : TypeMember
+import net.ormr.jukkas.StructurallyComparable
+
+sealed interface OldType : StructurallyComparable {
+    val internalName: String
+
+    fun resolve(context: TypeResolutionContext): ResolvedTypeOrError
+
+    override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean = equals(other)
+}

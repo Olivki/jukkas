@@ -17,21 +17,21 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 
 sealed class Argument : ChildNode()
 
 sealed class NamedArgument : Argument(), NamedDefinition, HasMutableType {
     abstract override val name: String
-    abstract override var type: Type
+    abstract override var type: OldType
     var index: Int = -1
 
     operator fun component1(): String = name
 
-    operator fun component2(): Type = type
+    operator fun component2(): OldType = type
 }
 
-class BasicArgument(override val name: String, override var type: Type) : NamedArgument() {
+class BasicArgument(override val name: String, override var type: OldType) : NamedArgument() {
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is BasicArgument && name == other.name && type.isStructurallyEquivalent(other.type)
 
@@ -40,7 +40,7 @@ class BasicArgument(override val name: String, override var type: Type) : NamedA
 
 class DefaultArgument(
     override val name: String,
-    override var type: Type,
+    override var type: OldType,
     default: Expression,
 ) : NamedArgument() {
     var default: Expression by child(default)

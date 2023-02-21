@@ -20,8 +20,8 @@ import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Positionable
 import net.ormr.jukkas.Source
 import net.ormr.jukkas.backend.ir.*
-import net.ormr.jukkas.type.ResolvedTypeOrError
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.ResolvedTypeOrError
+import net.ormr.jukkas.oldtype.OldType
 import net.ormr.krautils.lang.ifNotNull
 
 class TypeCheckingPhase private constructor(source: Source) : CompilerPhase(source) {
@@ -95,7 +95,7 @@ class TypeCheckingPhase private constructor(source: Source) : CompilerPhase(sour
         nodes.forEach(::checkType)
     }
 
-    private fun checkCompatibility(position: Positionable, a: Type, b: Type) {
+    private fun checkCompatibility(position: Positionable, a: OldType, b: OldType) {
         require(a is ResolvedTypeOrError) { notResolved(a) }
         require(b is ResolvedTypeOrError) { notResolved(b) }
         if (a isIncompatible b) {
@@ -103,12 +103,12 @@ class TypeCheckingPhase private constructor(source: Source) : CompilerPhase(sour
         }
     }
 
-    private fun notResolved(type: Type): String = "Type <$type> is not resolved. Was type resolution skipped?"
+    private fun notResolved(type: OldType): String = "Type <$type> is not resolved. Was type resolution skipped?"
 
     private fun reportIncompatibleTypes(
         position: Positionable,
-        expected: Type,
-        got: Type,
+        expected: OldType,
+        got: OldType,
     ) {
         reportTypeError(position, formatIncompatibleTypes(expected, got))
     }

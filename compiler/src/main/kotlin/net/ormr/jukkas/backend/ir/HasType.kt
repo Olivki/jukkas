@@ -16,8 +16,8 @@
 
 package net.ormr.jukkas.backend.ir
 
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 
 sealed interface HasType : Node {
-    val type: Type
+    val type: OldType
 }

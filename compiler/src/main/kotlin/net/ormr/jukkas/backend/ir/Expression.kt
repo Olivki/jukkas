@@ -16,8 +16,8 @@
 
 package net.ormr.jukkas.backend.ir
 
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 
 sealed class Expression : Statement(), HasType {
-    abstract override val type: Type
+    abstract override val type: OldType
 }

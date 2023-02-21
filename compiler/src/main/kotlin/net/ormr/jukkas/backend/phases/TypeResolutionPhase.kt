@@ -16,20 +16,20 @@
 
 package net.ormr.jukkas.backend.phases
 
-import net.ormr.jukkas.CompilerContext
+import net.ormr.jukkas.OldCompilerContext
 import net.ormr.jukkas.JukkasResult
 import net.ormr.jukkas.Positionable
 import net.ormr.jukkas.Source
 import net.ormr.jukkas.backend.ir.*
-import net.ormr.jukkas.type.ErrorType
-import net.ormr.jukkas.type.JukkasType
-import net.ormr.jukkas.type.JvmPrimitiveType
-import net.ormr.jukkas.type.ResolvedType
-import net.ormr.jukkas.type.ResolvedTypeOrError
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.TypeCache
-import net.ormr.jukkas.type.TypeResolutionContext
-import net.ormr.jukkas.type.UnknownType
+import net.ormr.jukkas.oldtype.ErrorType
+import net.ormr.jukkas.oldtype.JukkasType
+import net.ormr.jukkas.oldtype.JvmPrimitiveType
+import net.ormr.jukkas.oldtype.ResolvedType
+import net.ormr.jukkas.oldtype.ResolvedTypeOrError
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.TypeCache
+import net.ormr.jukkas.oldtype.TypeResolutionContext
+import net.ormr.jukkas.oldtype.UnknownType
 
 /**
  * Performs type resolution and type inference, and some light type checking.
@@ -37,7 +37,7 @@ import net.ormr.jukkas.type.UnknownType
 class TypeResolutionPhase private constructor(
     source: Source,
     private val types: TypeCache,
-    private val compilerContext: CompilerContext,
+    private val compilerContext: OldCompilerContext,
 ) : CompilerPhase(source) {
     private val context = object : TypeResolutionContext {
         override val cache: TypeCache
@@ -235,7 +235,7 @@ class TypeResolutionPhase private constructor(
     }
 
     private inline fun resolveTypeIfNeeded(
-        type: Type,
+        type: OldType,
         ifUnknown: () -> ResolvedTypeOrError,
     ): ResolvedTypeOrError = when (type) {
         is UnknownType -> ifUnknown()
@@ -243,7 +243,7 @@ class TypeResolutionPhase private constructor(
         else -> resolveType(type)
     }
 
-    private fun resolveType(type: Type): ResolvedTypeOrError = type.resolve(context)
+    private fun resolveType(type: OldType): ResolvedTypeOrError = type.resolve(context)
 
     private fun unresolvedType(position: Positionable): ErrorType =
         errorType(position, "Unresolved type")
@@ -263,8 +263,8 @@ class TypeResolutionPhase private constructor(
 
     private fun incompatibleTypes(
         position: Positionable,
-        expected: Type,
-        got: Type,
+        expected: OldType,
+        got: OldType,
     ): ErrorType = errorType(position, formatIncompatibleTypes(expected, got))
 
     private fun findDefinition(reference: DefinitionReference): NamedDefinition? {
@@ -282,14 +282,14 @@ class TypeResolutionPhase private constructor(
     }
 
     companion object {
-        fun run(unit: CompilationUnit, compilerContext: CompilerContext): JukkasResult<CompilationUnit> =
+        fun run(unit: CompilationUnit, compilerContext: OldCompilerContext): JukkasResult<CompilationUnit> =
             run(unit, unit.source, unit.types, compilerContext)
 
         fun <T : Node> run(
             node: T,
             source: Source,
             types: TypeCache,
-            compilerContext: CompilerContext,
+            compilerContext: OldCompilerContext,
         ): JukkasResult<T> {
             val phase = TypeResolutionPhase(source, types, compilerContext)
             phase.check(node)

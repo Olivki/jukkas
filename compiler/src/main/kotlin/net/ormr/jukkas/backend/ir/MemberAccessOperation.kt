@@ -17,9 +17,9 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.UnknownType
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.UnknownType
+import net.ormr.jukkas.oldtype.member.TypeMember
 
 class MemberAccessOperation(
     left: Expression,
@@ -28,7 +28,7 @@ class MemberAccessOperation(
 ) : Expression(), HasMutableType {
     var left: Expression by child(left)
     var right: Expression by child(right)
-    override var type: Type = UnknownType
+    override var type: OldType = UnknownType
     var member: TypeMember? = null
 
     // TODO: do we want to check for type here?
@@ -47,5 +47,5 @@ class MemberAccessOperation(
 
     operator fun component2(): Expression = right
 
-    operator fun component3(): Type = type
+    operator fun component3(): OldType = type
 }

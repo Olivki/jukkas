@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type
+package net.ormr.jukkas.oldtype
 
-import net.ormr.jukkas.type.member.TypeMember
+import net.ormr.jukkas.oldtype.member.TypeMember
 
 /**
  * Represents a [ResolvedType] or an [ErrorType].
  */
-sealed interface ResolvedTypeOrError : Type {
+sealed interface ResolvedTypeOrError : OldType {
     val superType: ResolvedType?
 
     val interfaces: List<ResolvedType>
@@ -54,7 +54,7 @@ sealed interface ResolvedTypeOrError : Type {
     override fun resolve(context: TypeResolutionContext): ResolvedTypeOrError = this
 
     /**
-     * Returns `true` if `this` [Type] and [other] is compatible.
+     * Returns `true` if `this` [OldType] and [other] is compatible.
      *
      * TODO: document what "compatible" means
      */

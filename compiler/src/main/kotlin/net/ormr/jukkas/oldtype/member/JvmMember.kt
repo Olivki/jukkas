@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.type.member
+package net.ormr.jukkas.oldtype.member
 
-import net.ormr.jukkas.type.AsmMethodType
-import net.ormr.jukkas.type.ResolvedType
+import net.ormr.jukkas.oldtype.AsmMethodType
+import net.ormr.jukkas.oldtype.ResolvedType
 import net.ormr.krautils.collections.asUnmodifiableList
 import net.ormr.krautils.reflection.isStatic
 import java.lang.reflect.Member

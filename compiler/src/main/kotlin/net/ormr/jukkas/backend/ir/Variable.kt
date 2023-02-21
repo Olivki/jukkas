@@ -16,11 +16,11 @@
 
 package net.ormr.jukkas.backend.ir
 
-import net.ormr.jukkas.type.Type
+import net.ormr.jukkas.oldtype.OldType
 
 sealed interface Variable : Node, NamedDefinition, HasMutableType {
     val kind: PropertyKind
     override val name: String
-    override var type: Type
+    override var type: OldType
     var initializer: Expression?
 }

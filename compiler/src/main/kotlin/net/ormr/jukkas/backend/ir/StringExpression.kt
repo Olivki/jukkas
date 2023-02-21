@@ -17,8 +17,8 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.JvmReferenceType
-import net.ormr.jukkas.type.ResolvedType
+import net.ormr.jukkas.oldtype.JvmReferenceType
+import net.ormr.jukkas.oldtype.ResolvedType
 import net.ormr.jukkas.utils.checkStructuralEquivalence
 
 sealed class StringTemplatePart : ChildNode() {

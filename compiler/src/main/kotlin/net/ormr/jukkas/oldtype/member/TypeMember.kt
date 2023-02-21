@@ -14,10 +14,30 @@
  * limitations under the License.
  */
 
-package net.ormr.jukkas.backend.ir
+package net.ormr.jukkas.oldtype.member
 
-import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.AsmMethodType
+import net.ormr.jukkas.oldtype.ResolvedType
 
-sealed interface Definition : Node, HasType {
-    override val type: OldType
+sealed interface TypeMember {
+    val name: String
+    val declaringType: ResolvedType
+
+    val isStatic: Boolean
+
+    sealed interface Executable : TypeMember {
+        val parameterTypes: List<ResolvedType>
+
+        val returnType: ResolvedType
+
+        fun toAsmType(): AsmMethodType
+    }
+
+    sealed interface Method : Executable
+
+    sealed interface Constructor : Executable
+
+    sealed interface Field : TypeMember {
+        val type: ResolvedType
+    }
 }

@@ -17,12 +17,12 @@
 package net.ormr.jukkas.backend.ir
 
 import net.ormr.jukkas.StructurallyComparable
-import net.ormr.jukkas.type.Type
-import net.ormr.jukkas.type.UnknownType
+import net.ormr.jukkas.oldtype.OldType
+import net.ormr.jukkas.oldtype.UnknownType
 
 class InvocationArgument(value: Expression, val name: String?) : Expression(), HasMutableType {
     var value: Expression by child(value)
-    override var type: Type = UnknownType
+    override var type: OldType = UnknownType
 
     override fun isStructurallyEquivalent(other: StructurallyComparable): Boolean =
         other is InvocationArgument &&
@@ -39,5 +39,5 @@ class InvocationArgument(value: Expression, val name: String?) : Expression(), H
 
     operator fun component2(): Expression = value
 
-    operator fun component3(): Type = type
+    operator fun component3(): OldType = type
 }
